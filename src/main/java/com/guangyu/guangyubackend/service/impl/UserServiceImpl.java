@@ -113,7 +113,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         // 判断当前用户是否登录
         Object userObj = httpServletRequest.getSession().getAttribute(USER_LOGIN_STATUS);
         User user = (User)userObj;
-        ThrowUtils.throwIf(user != null && user.getId() != null, RespCode.NOT_LOGIN_ERROR);
+        ThrowUtils.throwIf(user == null || user.getId() == null || user.getId() <= 0, RespCode.NOT_LOGIN_ERROR);
 
         long userId = user.getId();
         user = this.getById(userId);
@@ -160,7 +160,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public List<UserVO> getUserVOList(List<User> userlist) {
         // 用户信息列表为空
-        if (CollUtil.isNotEmpty(userlist)) {
+        if (CollUtil.isEmpty(userlist)) {
             return new ArrayList<>();
         }
         return userlist.stream().map(this::getUserVO).collect(Collectors.toList());
@@ -187,7 +187,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         queryWrapper.orderBy(StrUtil.isNotEmpty(sortField), sortOrder.equals("ascend"), sortField);
         return queryWrapper;
     }
-
 
     @Override
     public String getEncryptPassword(String userPassword) {

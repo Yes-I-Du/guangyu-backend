@@ -53,7 +53,7 @@ public class UserController {
      * @param userRegisterRequest 用户登录信息
      * @return 脱敏后的用户信息
      */
-    @GetMapping("/login")
+    @PostMapping("/login")
     public BaseResponse<LoginUserVO> userLogin(UserLoginRequest userLoginRequest,
         HttpServletRequest httpServletRequest) {
         ThrowUtils.throwIf(userLoginRequest == null, RespCode.PARAMS_ERROR);
@@ -138,7 +138,7 @@ public class UserController {
      * @param id 用户 id
      * @return 用户信息
      */
-    @DeleteMapping("/delete")
+    @PostMapping("/delete")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Boolean> deleteUser(@RequestBody DeleteRequest deleteRequest) {
         ThrowUtils.throwIf(deleteRequest == null || deleteRequest.getId() <= 0, RespCode.PARAMS_ERROR);
@@ -168,7 +168,7 @@ public class UserController {
      * @param userQueryRequest 用户信息
      * @return 用户信息
      */
-    @GetMapping("/list/page/vo")
+    @PostMapping("/list/page/vo")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Page<UserVO>> listUserVOByPage(@RequestBody UserQueryRequest userQueryRequest) {
         ThrowUtils.throwIf(userQueryRequest == null, RespCode.PARAMS_ERROR);
