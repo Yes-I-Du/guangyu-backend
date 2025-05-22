@@ -1,0 +1,87 @@
+package com.guangyu.guangyubackend.model.dto.picture;/**
+ * 图片查询请求
+ *
+ * @author Dmz Email:  * @since 2025/05/22 22:14
+ */
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.guangyu.guangyubackend.common.PageRequest;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+import java.io.Serializable;
+import java.util.List;
+
+/**
+ * 图片查询请求
+ *
+ * @author dmz xxx@163.com
+ * @version 2025/5/22 22:14
+ * @since JDK17
+ */
+@EqualsAndHashCode(callSuper = true)
+@Data
+public class PictureQueryRequest extends PageRequest implements Serializable {
+
+    /**
+     * id
+     */
+    private Long id;
+
+    /**
+     * 图片名称
+     */
+    private String name;
+
+    /**
+     * 简介
+     */
+    private String introduction;
+
+    /**
+     * 分类
+     */
+    private String category;
+
+    /**
+     * 标签
+     */
+    private List<String> tags;
+
+    /**
+     * 图片体积
+     */
+    private Long picSize;
+
+    /**
+     * 图片宽度
+     */
+    private Integer picWidth;
+
+    /**
+     * 图片高度
+     */
+    private Integer picHeight;
+
+    /**
+     * 图片宽高比例
+     */
+    private Double picScale;
+
+    /**
+     * 图片格式
+     */
+    private String picFormat;
+
+    /**
+     * 创建用户 id
+     */
+    private Long userId;
+
+    /**
+     * 搜索词（同时搜名称、简介等）
+     */
+    private String searchText;
+}
+

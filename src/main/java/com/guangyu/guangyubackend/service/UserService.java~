@@ -78,6 +78,7 @@ public interface UserService extends IService<User> {
 
     /**
      * 构造QueryWrapper对象生成Sql查询
+     *
      * @param userQueryRequest 用户信息查询对象
      * @return QueryWrapper QueryWrapper对象
      */
@@ -89,4 +90,9 @@ public interface UserService extends IService<User> {
      * @return 加密后的密码
      */
     String getEncryptPassword(String userPassword);
+
+    /*
+     *登录用户角色判断(是否为Admin)
+     */
+    boolean isAdmin(HttpServletRequest httpServletRequest);
 }

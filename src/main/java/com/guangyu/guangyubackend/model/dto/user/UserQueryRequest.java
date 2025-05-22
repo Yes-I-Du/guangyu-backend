@@ -1,6 +1,5 @@
 package com.guangyu.guangyubackend.model.dto.user;
 
-import cn.hutool.db.PageResult;
 import com.guangyu.guangyubackend.common.PageRequest;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

@@ -160,7 +160,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public List<UserVO> getUserVOList(List<User> userlist) {
         // 用户信息列表为空
-        if (CollUtil.isNotEmpty(userlist)) {
+        if (CollUtil.isEmpty(userlist)) {
             return new ArrayList<>();
         }
         return userlist.stream().map(this::getUserVO).collect(Collectors.toList());
@@ -193,6 +193,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         // 盐值，混淆密码
         final String SALT = "guangYuUserPasswordSalt";
         return DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
+    }
+
+    @Override
+    public boolean isAdmin(User user) {
+        if (user == null) {
+            return false;
+        }
+        return user != null && UserRoleEnum.ADMIN.getValue().equals(user.getUserRole());
     }
 
 }
