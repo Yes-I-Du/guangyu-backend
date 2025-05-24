@@ -1,5 +1,7 @@
 package com.guangyu.guangyubackend.model.dto.picture;
 
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -10,6 +12,7 @@ import java.util.List;
  * @version 2025/5/22 22:10
  * @since JDK17
  */
+@Data
 public class PictureEditRequest implements Serializable {
 
     private static final long serialVersionUID = 3191241716373120793L;
