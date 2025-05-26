@@ -3,6 +3,8 @@ package com.guangyu.guangyubackend.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.guangyu.guangyubackend.model.dto.picture.PictureQueryRequest;
+import com.guangyu.guangyubackend.model.dto.picture.PictureReviewRequest;
+import com.guangyu.guangyubackend.model.dto.picture.PictureUploadByBatchRequest;
 import com.guangyu.guangyubackend.model.dto.picture.PictureUploadRequest;
 import com.guangyu.guangyubackend.model.entity.Picture;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -22,12 +24,21 @@ public interface PictureService extends IService<Picture> {
     /**
      * 上传图片
      *
-     * @param multipartFile
+     * @param inputFileSource      图片上传方式(文件/Url)
      * @param pictureUploadRequest 上传图片参数
-     * @param loginUser                 当前登录用户
+     * @param loginUser            当前登录用户
      * @return 图片脱敏信息
      */
-    PictureVO uploadPicture(MultipartFile multipartFile, PictureUploadRequest pictureUploadRequest, User loginUser);
+    PictureVO uploadPicture(Object inputFileSource, PictureUploadRequest pictureUploadRequest, User loginUser);
+
+    /**
+     * 批量抓取和创建图片
+     *
+     * @param pictureUploadByBatchRequest 批量创建图片参数
+     * @param loginUser                   当前登录用户
+     * @return 成功创建的图片数
+     */
+    Integer uploadPictureByBatch(PictureUploadByBatchRequest pictureUploadByBatchRequest, User loginUser);
 
     /**
      * 获取图片脱敏信息
@@ -61,4 +72,20 @@ public interface PictureService extends IService<Picture> {
      * @param picture 图片信息
      */
     void vaildPicture(Picture picture);
+
+    /**
+     * 图片信息审核
+     *
+     * @param pictureReviewRequest 审核信息
+     * @param loginUser            当前登录用户
+     */
+    void doPictureReview(PictureReviewRequest pictureReviewRequest, User loginUser);
+
+    /**
+     * 设置审核状态
+     *
+     * @param picture   图片信息
+     * @param loginUser 当前登录用户
+     */
+    void setReviewStatus(Picture picture, User loginUser);
 }

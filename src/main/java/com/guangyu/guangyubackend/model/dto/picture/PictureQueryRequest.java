@@ -1,16 +1,11 @@
-package com.guangyu.guangyubackend.model.dto.picture;/**
- * 图片查询请求
- *
- * @author Dmz Email:  * @since 2025/05/22 22:14
- */
+package com.guangyu.guangyubackend.model.dto.picture;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.guangyu.guangyubackend.common.PageRequest;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -23,6 +18,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class PictureQueryRequest extends PageRequest implements Serializable {
+    private static final long serialVersionUID = 3191241716373120793L;
 
     /**
      * id
@@ -78,6 +74,27 @@ public class PictureQueryRequest extends PageRequest implements Serializable {
      * 创建用户 id
      */
     private Long userId;
+
+    /**
+     * 状态：0-待审核; 1-通过; 2-拒绝
+     */
+    private Integer reviewStatus;
+
+    /**
+     * 审核信息
+     */
+    private String reviewMessage;
+
+    /**
+     * 审核人 id
+     */
+    private Long reviewerId;
+
+    /**
+     * 审核时间
+     */
+    private Date reviewTime;
+
 
     /**
      * 搜索词（同时搜名称、简介等）

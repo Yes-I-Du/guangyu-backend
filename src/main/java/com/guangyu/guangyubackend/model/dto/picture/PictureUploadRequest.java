@@ -1,10 +1,7 @@
 package com.guangyu.guangyubackend.model.dto.picture;
 
-import lombok.Getter;
-
+import lombok.Data;
 import java.io.Serializable;
-import java.util.List;
-
 /**
  * 图片上传请求参数类
  *
@@ -12,7 +9,7 @@ import java.util.List;
  * @version 2025/5/21 23:54
  * @since JDK17
  */
-@Getter
+@Data
 public class PictureUploadRequest implements Serializable {
 
     private static final long serialVersionUID = 3191241716373120793L;
@@ -22,5 +19,15 @@ public class PictureUploadRequest implements Serializable {
      * 图片需要支持重复上传，不改变图片基础信息，只改变图片文件
      * */
     private Long id;
+
+    /**
+     * 文件上传Url
+     */
+    private String fileUrl;
+
+    /**
+     * 图片名称
+     */
+    private String picName;
 }
 

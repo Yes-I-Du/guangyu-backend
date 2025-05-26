@@ -13,4 +13,7 @@ public interface FileConstant {
 
     /* 允许上传图片格式 */
     final List<String> ALLOW_FORMAT_LIST = Arrays.asList("jpeg", "jpg", "png", "webp");
+
+    /* 允许上传图片格式(Url方式上传) */
+    final List<String> ALLOW_CONTENT_TYPES = Arrays.asList("image/jpeg", "image/jpg", "image/png", "image/webp");
 }
