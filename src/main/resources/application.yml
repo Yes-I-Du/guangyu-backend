@@ -6,13 +6,12 @@ server:
 spring:
   application:
     name: guangyu-backend
-  #数据库配置
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://ip:port/DB_NAME?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
-    username: root
-    password: Root@1234
-
+  profiles:
+    active: local
+#  更大的文件上传体积
+  servlet:
+    multipart:
+      max-file-size: 10MB
 mybatis-plus:
   configuration:
     # MyBatis 配置

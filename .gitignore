@@ -42,3 +42,6 @@ build/
 logs/
 *.log
 
+# application.yml
+application-local.yml
+
