@@ -15,6 +15,7 @@ import com.guangyu.guangyubackend.infrastructure.common.ResultUtils;
 import com.guangyu.guangyubackend.infrastructure.exception.BusinessException;
 import com.guangyu.guangyubackend.infrastructure.exception.RespCode;
 import com.guangyu.guangyubackend.infrastructure.exception.ThrowUtils;
+import com.guangyu.guangyubackend.interfaces.assembler.PictureAssembler;
 import com.guangyu.guangyubackend.interfaces.dto.picture.*;
 import com.guangyu.guangyubackend.interfaces.vo.picture.PictureTagCategory;
 import com.guangyu.guangyubackend.interfaces.vo.picture.PictureVO;
@@ -86,23 +87,6 @@ public class PictureController {
     }
 
     /**
-     * 批量抓取和创建图片
-     *
-     * @param pictureUploadByBatchRequest 批量创建图片参数
-     * @param request                     http请求
-     * @return 成功创建的图片数
-     */
-    @PostMapping("/upload/batch")
-    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
-    public BaseResponse<Integer> uploadPictureByBatch(
-        @RequestBody PictureUploadByBatchRequest pictureUploadByBatchRequest, HttpServletRequest request) {
-        ThrowUtils.throwIf(pictureUploadByBatchRequest == null, RespCode.PARAMS_ERROR);
-        User loginUser = userApplicationService.getLoginUser(request);
-        int uploadCount = pictureService.uploadPictureByBatch(pictureUploadByBatchRequest, loginUser);
-        return ResultUtils.success(uploadCount);
-    }
-
-    /**
      * 图片删除 该图片只有用户本人或者管理员可以删除
      *
      * @param deleteRequest      图片删除信息
@@ -131,10 +115,8 @@ public class PictureController {
     public BaseResponse<Boolean> updatePicture(@RequestBody PictureUpdateRequest pictureUpdateRequest,
         HttpServletRequest request) {
         ThrowUtils.throwIf(pictureUpdateRequest == null || pictureUpdateRequest.getId() <= 0, RespCode.PARAMS_ERROR);
-        // 实体类与DTO类转换 TODO:参照USER生成转换方法assembler
-        Picture picture = new Picture();
-        BeanUtils.copyProperties(pictureUpdateRequest, picture);
-        picture.setTags(JSONUtil.toJsonStr(pictureUpdateRequest.getTags()));
+        // 实体类与DTO类转换
+        Picture picture = PictureAssembler.toPictureEntity(pictureUpdateRequest);
         // 图片数据校验
         pictureApplicationService.vaildPicture(picture);
         // 图片存在信息校验
@@ -148,6 +130,27 @@ public class PictureController {
         ThrowUtils.throwIf(!result, RespCode.OPERATION_ERROR, "图片更新失败");
         return ResultUtils.success(result);
     }
+
+    /**
+     * 批量抓取和创建图片
+     *
+     * @param pictureUploadByBatchRequest 批量创建图片参数
+     * @param request                     http请求
+     * @return 成功创建的图片数
+     */
+    @PostMapping("/upload/batch")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<Integer> uploadPictureByBatch(
+        @RequestBody PictureUploadByBatchRequest pictureUploadByBatchRequest, HttpServletRequest request) {
+        ThrowUtils.throwIf(pictureUploadByBatchRequest == null, RespCode.PARAMS_ERROR);
+        User loginUser = userApplicationService.getLoginUser(request);
+        int uploadCount = pictureService.uploadPictureByBatch(pictureUploadByBatchRequest, loginUser);
+        return ResultUtils.success(uploadCount);
+    }
+
+
+
+
 
     /**
      * 根据id获取图片 仅管理员权限可用
