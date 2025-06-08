@@ -369,7 +369,7 @@ public class PictureDomainServiceImpl implements PictureDomainService {
             //                    .setSql("totalSize = totalSize - " + picture.getPicSize())
             //                    .setSql("totalCount = totalCount - 1")
             //                    .update();
-            //                ThrowUtils.throwIf(!update, RespCode.OPERATION_ERROR, "用户空间剩余容量更新失败");
+            //                ThrowUtils.throwIf(!update, RespCode.OPERATION_ERROR, "用户空间剩余容量不足");
             return true;
         });
         this.clearPictureFile(existPicture);
