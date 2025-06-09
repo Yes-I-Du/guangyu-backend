@@ -56,7 +56,7 @@ public class PictureApplicationServiceImpl implements PictureApplicationService 
     }
 
     @Override
-    public PictureVO getPictureVO(Picture picture, HttpServletRequest request) {
+    public PictureVO getPictureVO(Picture picture,HttpServletRequest request) {
         // 对象转换
         PictureVO pictureVO = PictureVO.PictureToVo(picture);
 
@@ -68,6 +68,24 @@ public class PictureApplicationServiceImpl implements PictureApplicationService 
             pictureVO.setUser(userVO);
         }
         return pictureVO;
+    }
+
+    @Override
+    public Picture getPictureById(Long id) {
+        Picture picture = pictureDomainService.getById(id);
+        ThrowUtils.throwIf(picture == null, RespCode.NOT_FOUND_ERROR, "图片信息不存在");
+        return picture;
+    }
+
+    @Override
+    public PictureVO getPictureVOById(Picture picture, HttpServletRequest request) {
+        return this.getPictureVO(picture,request);
+
+    }
+
+    @Override
+    public Page<Picture> page(Page<Picture> picturePage, QueryWrapper<Picture> queryWrapper) {
+        return pictureDomainService.page(picturePage, queryWrapper);
     }
 
     @Override
@@ -115,6 +133,12 @@ public class PictureApplicationServiceImpl implements PictureApplicationService 
     @Override
     public Integer uploadPictureByBatch(PictureUploadByBatchRequest pictureUploadByBatchRequest, User loginUser) {
         return pictureDomainService.uploadPictureByBatch(pictureUploadByBatchRequest, loginUser);
+    }
+
+    @Override
+    public void updatePicture(Picture picture) {
+        boolean result = pictureDomainService.updatePictureById(picture);
+        ThrowUtils.throwIf(!result, RespCode.OPERATION_ERROR, "更新失败");
     }
 
     @Async

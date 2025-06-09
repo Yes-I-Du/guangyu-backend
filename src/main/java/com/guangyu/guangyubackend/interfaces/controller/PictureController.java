@@ -50,8 +50,8 @@ public class PictureController {
     @Resource
     private PictureApplicationService pictureApplicationService;
 
-   // TODO: 2025/5/22 未完成 本地缓存Caffeine
-     // ...
+    // TODO: 2025/5/22 未完成 本地缓存Caffeine
+    // ...
     // ...
 
     /**
@@ -119,38 +119,14 @@ public class PictureController {
         Picture picture = PictureAssembler.toPictureEntity(pictureUpdateRequest);
         // 图片数据校验
         pictureApplicationService.vaildPicture(picture);
-        // 图片存在信息校验
-        Long pictureId = pictureUpdateRequest.getId();
-        Picture existPicture = pictureApplicationService.getById(pictureId);
-        ThrowUtils.throwIf(existPicture == null, RespCode.NOT_FOUND_ERROR, "图片不存在");
+        // 获取既存图片信息
+        Picture existPicture = pictureApplicationService.getPictureById(pictureUpdateRequest.getId());
         // 设置审核参数
         pictureApplicationService.setReviewStatus(existPicture, userApplicationService.getLoginUser(request));
         // 更新图片信息
-        boolean result = pictureApplicationService.updateById(picture);
-        ThrowUtils.throwIf(!result, RespCode.OPERATION_ERROR, "图片更新失败");
-        return ResultUtils.success(result);
+        pictureApplicationService.updatePicture(picture);
+        return ResultUtils.success(true);
     }
-
-    /**
-     * 批量抓取和创建图片
-     *
-     * @param pictureUploadByBatchRequest 批量创建图片参数
-     * @param request                     http请求
-     * @return 成功创建的图片数
-     */
-    @PostMapping("/upload/batch")
-    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
-    public BaseResponse<Integer> uploadPictureByBatch(
-        @RequestBody PictureUploadByBatchRequest pictureUploadByBatchRequest, HttpServletRequest request) {
-        ThrowUtils.throwIf(pictureUploadByBatchRequest == null, RespCode.PARAMS_ERROR);
-        User loginUser = userApplicationService.getLoginUser(request);
-        int uploadCount = pictureService.uploadPictureByBatch(pictureUploadByBatchRequest, loginUser);
-        return ResultUtils.success(uploadCount);
-    }
-
-
-
-
 
     /**
      * 根据id获取图片 仅管理员权限可用
@@ -162,8 +138,7 @@ public class PictureController {
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Picture> getPictureById(@RequestParam("id") Long id) {
         ThrowUtils.throwIf(id <= 0, RespCode.PARAMS_ERROR);
-        Picture picture = pictureApplicationService.getById(id);
-        ThrowUtils.throwIf(picture == null, RespCode.NOT_FOUND_ERROR);
+        Picture picture = pictureApplicationService.getPictureById(id);
         return ResultUtils.success(picture);
     }
 
@@ -178,9 +153,9 @@ public class PictureController {
     public BaseResponse<PictureVO> getPictureVOById(@PathVariable("id") Long id,
         HttpServletRequest httpServletRequest) {
         ThrowUtils.throwIf(id <= 0, RespCode.PARAMS_ERROR);
-        Picture picture = pictureService.getById(id);
+        Picture picture = pictureApplicationService.getPictureById(id);
         ThrowUtils.throwIf(picture == null, RespCode.NOT_FOUND_ERROR);
-        return ResultUtils.success(pictureService.getPictureVO(picture, httpServletRequest));
+        return ResultUtils.success(pictureApplicationService.getPictureVOById(picture, httpServletRequest));
     }
 
     /*
@@ -195,8 +170,8 @@ public class PictureController {
         ThrowUtils.throwIf(pictureQueryRequest == null, RespCode.PARAMS_ERROR);
         long current = pictureQueryRequest.getCurrent();
         long pageSize = pictureQueryRequest.getPageSize();
-        Page<Picture> picturePage =
-            pictureApplicationService.page(new Page<>(current, pageSize), pictureApplicationService.getQueryWrapper(pictureQueryRequest));
+        Page<Picture> picturePage = pictureApplicationService.page(new Page<>(current, pageSize),
+            pictureApplicationService.getQueryWrapper(pictureQueryRequest));
         return ResultUtils.success(picturePage);
     }
 
@@ -214,14 +189,19 @@ public class PictureController {
         long size = pictureQueryRequest.getPageSize();
         // 限制爬虫
         ThrowUtils.throwIf(size > 20, RespCode.PARAMS_ERROR);
+        // TODO:空间权限校验，分为公共图库和用户私有图库
+
+        // 公共图库
         // 限制用户查看条件(默认普通用户只能查看已过审的图片)
         pictureQueryRequest.setReviewStatus(PictureReviewStatusEnum.PASS.getValue());
         // 查询数据库
-        Page<Picture> picturePage =
-            pictureService.page(new Page<>(current, size), pictureService.getQueryWrapper(pictureQueryRequest));
+        Page<Picture> picturePage = pictureApplicationService.page(new Page<>(current, size),
+            pictureApplicationService.getQueryWrapper(pictureQueryRequest));
         // 获取封装类
-        return ResultUtils.success(pictureService.getPictureVOPage(picturePage, request));
+        return ResultUtils.success(pictureApplicationService.getPictureVOPage(picturePage, request));
     }
+
+    // TODO 分页获取图片列表（封装类） + 缓存 待实现
 
     /**
      * 编辑图片（给用户使用）
@@ -234,30 +214,30 @@ public class PictureController {
         HttpServletRequest request) {
         ThrowUtils.throwIf(pictureEditRequest == null || pictureEditRequest.getId() <= 0, RespCode.PARAMS_ERROR);
         // 在此处将实体类和 DTO 进行转换
-        Picture picture = new Picture();
-        BeanUtils.copyProperties(pictureEditRequest, picture);
-        // 注意将 list 转为 string
-        picture.setTags(JSONUtil.toJsonStr(pictureEditRequest.getTags()));
-        // 设置编辑时间
-        picture.setEditTime(new Date());
-        // 数据校验
-        pictureService.vaildPicture(picture);
-        User loginUser = userApplicationService.getLoginUser(request);
-        // 判断是否存在
-        long id = pictureEditRequest.getId();
-        Picture oldPicture = pictureService.getById(id);
-        ThrowUtils.throwIf(oldPicture == null, RespCode.NOT_FOUND_ERROR);
-        // 仅本人或管理员可编辑
-        if (!oldPicture.getUserId().equals(loginUser.getId()) && !userApplicationService.isAdmin(loginUser)) {
-            throw new BusinessException(RespCode.NO_AUTH_ERROR);
-        }
-        // 设置审核参数
-        pictureService.setReviewStatus(picture, loginUser);
-        // 操作数据库
-        boolean result = pictureService.updateById(picture);
-        ThrowUtils.throwIf(!result, RespCode.OPERATION_ERROR);
-        return ResultUtils.success(result);
+        Picture picture = PictureAssembler.toPictureEntity(pictureEditRequest);
+        pictureApplicationService.editPicture(picture, userApplicationService.getLoginUser(request));
+        return ResultUtils.success(true);
     }
+
+    // TODO 批量抓取创建图片待实现
+    //    /**
+    //     * 批量抓取和创建图片
+    //     *
+    //     * @param pictureUploadByBatchRequest 批量创建图片参数
+    //     * @param request                     http请求
+    //     * @return 成功创建的图片数
+    //     */
+    //    @PostMapping("/upload/batch")
+    //    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    //    public BaseResponse<Integer> uploadPictureByBatch(
+    //        @RequestBody PictureUploadByBatchRequest pictureUploadByBatchRequest, HttpServletRequest request) {
+    //        ThrowUtils.throwIf(pictureUploadByBatchRequest == null, RespCode.PARAMS_ERROR);
+    //        User loginUser = userApplicationService.getLoginUser(request);
+    //        int uploadCount = pictureService.uploadPictureByBatch(pictureUploadByBatchRequest, loginUser);
+    //        return ResultUtils.success(uploadCount);
+    //    }
+
+
 
     /**
      * 获取图片标签分类列表
@@ -288,7 +268,7 @@ public class PictureController {
         ThrowUtils.throwIf(
             pictureReviewRequest == null || pictureReviewRequest.getId() == null || pictureReviewRequest.getId() <= 0,
             RespCode.PARAMS_ERROR);
-        pictureService.doPictureReview(pictureReviewRequest, userApplicationService.getLoginUser(request));
+        pictureApplicationService.doPictureReview(pictureReviewRequest, userApplicationService.getLoginUser(request));
         return ResultUtils.success(true);
     }
 

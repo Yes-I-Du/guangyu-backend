@@ -5,6 +5,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.guangyu.guangyubackend.domain.picture.entity.Picture;
 import com.guangyu.guangyubackend.domain.picture.repository.PictureRepository;
 import com.guangyu.guangyubackend.domain.picture.service.PictureDomainService;
@@ -346,6 +347,21 @@ public class PictureDomainServiceImpl implements PictureDomainService {
     }
 
     @Override
+    public Picture getById(Long id) {
+        return pictureRepository.getById(id);
+    }
+
+    @Override
+    public boolean updatePictureById(Picture picture) {
+        return pictureRepository.updateById(picture);
+    }
+
+    @Override
+    public Page<Picture> page(Page<Picture> picturePage, QueryWrapper<Picture> queryWrapper) {
+        return pictureRepository.page(picturePage, queryWrapper);
+    }
+
+    @Override
     public void deletePicture(long pictureId, User loginUser) {
         // 参数校验
         ThrowUtils.throwIf(pictureId <= 0, RespCode.PARAMS_ERROR, "图片数据错误");
@@ -377,7 +393,24 @@ public class PictureDomainServiceImpl implements PictureDomainService {
 
     @Override
     public void editPicture(Picture picture, User loginUser) {
-
+        // 设置编辑时间
+        picture.setEditTime(new Date());
+        // 数据校验
+        picture.vaildPicture();
+        // 判断是否存在
+        long id = picture.getId();
+        Picture existPicture = this.getById(id);
+        ThrowUtils.throwIf(existPicture == null, RespCode.NOT_FOUND_ERROR);
+        // TODO:权限校验，后续拓展为Sa-Token
+        // 仅本人或管理员可编辑
+        if (!existPicture.getUserId().equals(loginUser.getId()) && !loginUser.isAdmin()) {
+            throw new BusinessException(RespCode.NO_AUTH_ERROR);
+        }
+        // 设置审核参数
+        this.setReviewStatus(picture, loginUser);
+        // 操作数据库
+        boolean result = this.updatePictureById(picture);
+        ThrowUtils.throwIf(!result, RespCode.OPERATION_ERROR);
     }
 
     @Override
