@@ -121,6 +121,12 @@ public interface UserDomainService {
      */
     boolean updateUserById(User user);
 
+    /**
+     * 分页获取用户信息列表
+     *
+     * @param userPage 用户信息
+     * @return 用户信息列表
+     */
     Page<User> page(Page<User> userPage, QueryWrapper<User> queryWrapper);
 
     /**

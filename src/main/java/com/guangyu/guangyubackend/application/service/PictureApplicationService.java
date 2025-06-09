@@ -46,6 +46,32 @@ public interface PictureApplicationService {
     PictureVO getPictureVO(Picture picture, HttpServletRequest request);
 
     /**
+     * 根据Id获取图片信息
+     *
+     * @param pictureId 图片Id
+     * @return 图片信息
+     */
+    Picture getPictureById(Long pictureId);
+
+    /**
+     * 获取图片脱敏信息
+     *
+     * @param picture 图片信息
+     * @param request 请求
+     * @return 图片脱敏信息
+     */
+    PictureVO getPictureVOById(Picture picture,HttpServletRequest request);
+
+    /**
+     * 获取图片分页信息
+     *
+     * @param picturePage 图片分页信息
+     * @param queryWrapper 查询条件
+     * @return 该页图片信息
+     */
+    Page<Picture> page(Page<Picture> picturePage, QueryWrapper<Picture> queryWrapper);
+
+    /**
      * 分页获取图片信息
      *
      * @param picturePage 图片分页信息
@@ -86,6 +112,13 @@ public interface PictureApplicationService {
      * @return 成功创建的图片数
      */
     Integer uploadPictureByBatch(PictureUploadByBatchRequest pictureUploadByBatchRequest, User loginUser);
+
+    /**
+     * 更新图片
+     *
+     * @param picture 图片信息
+     */
+    void updatePicture(Picture picture);
 
     /**
      * 清理图片文件

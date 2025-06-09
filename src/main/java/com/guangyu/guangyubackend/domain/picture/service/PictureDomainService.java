@@ -62,7 +62,6 @@ public interface PictureDomainService {
      */
     Integer uploadPictureByBatch(PictureUploadByBatchRequest pictureUploadByBatchRequest, User loginUser);
 
-
     /**
      * 清理图片文件
      *
@@ -70,6 +69,30 @@ public interface PictureDomainService {
      */
     @Async
     void clearPictureFile(Picture oldPicture);
+
+    /**
+     * 根据图片ID获取图片信息
+     *
+     * @param pictureId 图片Id
+     */
+    Picture getById(Long pictureId);
+
+    /**
+     * 更新图片信息
+     *
+     * @param picture 图片信息
+     * @return
+     */
+    boolean updatePictureById(Picture picture);
+
+    /**
+     * 获取图片分页信息
+     *
+     * @param picturePage 图片分页信息
+     * @param queryWrapper 查询条件
+     * @return 该页图片信息
+     */
+    Page<Picture> page(Page<Picture> picturePage, QueryWrapper<Picture> queryWrapper);
 
     /**
      * 删除图片
