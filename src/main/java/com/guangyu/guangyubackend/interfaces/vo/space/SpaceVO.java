@@ -3,6 +3,7 @@ package com.guangyu.guangyubackend.interfaces.vo.space;
 import cn.hutool.core.bean.BeanUtil;
 import com.guangyu.guangyubackend.interfaces.vo.user.UserVO;
 import com.guangyu.guangyubackend.domain.space.entity.Space;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -14,6 +15,7 @@ import java.util.Date;
  * @version 2025/5/26 22:00
  * @since JDK17
  */
+@Data
 public class SpaceVO implements Serializable {
     private static final long serialVersionUID = 3191241716373120793L;
 
