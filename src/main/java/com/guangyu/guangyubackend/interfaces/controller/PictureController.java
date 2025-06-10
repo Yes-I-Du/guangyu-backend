@@ -40,7 +40,6 @@ import java.util.List;
  * @version 2025/5/21 23:09
  * @since JDK17
  */
-@Slf4j
 @RestController
 @RequestMapping("/picture")
 public class PictureController {

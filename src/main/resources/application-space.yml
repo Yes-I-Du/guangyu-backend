@@ -1,0 +1,17 @@
+space:
+  levels:
+    COMMON:
+      text: "普通版"
+      value: 0
+      maxCount: 100
+      maxSize: 104857600  # 100 * 1024 * 1024
+    PROFESSIONAL:
+      text: "专业版"
+      value: 1
+      maxCount: 1000
+      maxSize: 1048576000  # 1000 * 1024 * 1024
+    FLAGSHIP:
+      text: "旗舰版"
+      value: 2
+      maxCount: 10000
+      maxSize: 10485760000  # 10000 * 1024 * 1024

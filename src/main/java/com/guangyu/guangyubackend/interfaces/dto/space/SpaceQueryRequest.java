@@ -1,5 +1,9 @@
 package com.guangyu.guangyubackend.interfaces.dto.space;
 
+import com.guangyu.guangyubackend.infrastructure.common.PageRequest;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 import java.io.Serializable;
 
 /**
@@ -9,7 +13,9 @@ import java.io.Serializable;
  * @version 2025/5/26 21:49
  * @since JDK17
  */
-public class SpaceQueryRequest implements Serializable {
+@EqualsAndHashCode(callSuper = true)
+@Data
+public class SpaceQueryRequest extends PageRequest implements Serializable {
     private static final long serialVersionUID = 3191241716373120793L;
 
     /**
@@ -32,24 +38,5 @@ public class SpaceQueryRequest implements Serializable {
      */
     private Long userId;
 
-    /**
-     * 空间图片的最大总大小
-     */
-    private Long maxSize;
-
-    /**
-     * 空间图片的最大数量
-     */
-    private Long maxCount;
-
-    /**
-     * 当前空间下图片的总大小
-     */
-    private Long totalSize;
-
-    /**
-     * 当前空间下的图片数量
-     */
-    private Long totalCount;
 }
 
