@@ -49,5 +49,16 @@ public class SpaceLevelManager implements InitializingBean {
     public static Collection<SpaceLevel> getAllLevels() {
         return LEVEL_MAP.values();
     }
+
+    // 根据名称获取空间等级
+    public SpaceLevel getByName(String name) {
+        return LEVEL_MAP.get(name);
+    }
+
+    // 根据名称获取值
+    public Integer getValueByName(String name) {
+        SpaceLevel level = getByName(name);
+        return (level != null) ? level.getValue() : null;
+    }
 }
 
