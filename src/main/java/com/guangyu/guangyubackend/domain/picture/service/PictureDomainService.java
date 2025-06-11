@@ -111,7 +111,7 @@ public interface PictureDomainService {
     void editPicture(Picture picture, User loginUser);
 
     /**
-     * 空间图片信息校验
+     * 图片信息权限校验
      *
      * @param picture   图片信息
      * @param loginUser 当前登录用户
