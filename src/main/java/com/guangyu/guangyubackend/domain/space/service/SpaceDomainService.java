@@ -42,6 +42,14 @@ public interface SpaceDomainService {
     void deleteSpace(long spaceId, User loginUser);
 
     /**
+     * 用户私有空间信息编辑
+     *
+     * @param space   用户私有空间
+     * @param loginUser 当前登录用户
+     */
+    void editSpace(Space space, User loginUser);
+
+    /**
      * 根据空间ID获取用户空间信息
      *
      * @param spaceId 空间Id

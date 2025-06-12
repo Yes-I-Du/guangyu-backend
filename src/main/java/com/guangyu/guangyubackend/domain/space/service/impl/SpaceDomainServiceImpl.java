@@ -27,6 +27,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.Resource;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Optional;
 
 /**
@@ -116,6 +117,23 @@ public class SpaceDomainServiceImpl implements SpaceDomainService {
         this.checkSpaceAuth(loginUser, existSpace);
         // 操作数据库
         ThrowUtils.throwIf(!spaceRepository.removeById(spaceId), RespCode.OPERATION_ERROR,"删除失败");
+    }
+
+    @Override
+    public void editSpace(Space space, User loginUser) {
+        // 判断是否存在
+        Space existSpace = this.getById(space.getId());
+        ThrowUtils.throwIf(existSpace == null, RespCode.NOT_FOUND_ERROR, "用户空间不存在");
+        // 仅本人或者管理员可编辑
+        this.checkSpaceAuth(loginUser, existSpace);
+        // 数据填充
+        this.setSpaceLimitByLevel(space);
+        space.setEditTime(new Date());
+
+        // 数据校验
+        space.validSpaceInfo(false);
+        // 操作数据库
+        ThrowUtils.throwIf(!spaceRepository.updateById(space), RespCode.OPERATION_ERROR,"编辑失败");
     }
 
     @Override

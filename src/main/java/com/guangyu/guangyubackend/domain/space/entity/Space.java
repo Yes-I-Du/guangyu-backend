@@ -92,7 +92,6 @@ public class Space implements Serializable {
      */
     public void validSpaceInfo(boolean addFlag) {
         // 空间信息取得
-        Long spaceId = this.getId();
         String spaceName = this.getSpaceName();
         Integer spaceLevel = this.getSpaceLevel();
         Integer space = SpaceLevelManager.getByValue(spaceLevel).getValue();
