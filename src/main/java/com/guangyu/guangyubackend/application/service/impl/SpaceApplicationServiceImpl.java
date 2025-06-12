@@ -59,8 +59,6 @@ public class SpaceApplicationServiceImpl implements SpaceApplicationService {
 
     @Override
     public Long addSpace(SpaceAddRequest spaceAddRequest, User loginUser) {
-        // 图片校验
-        ThrowUtils.throwIf(spaceAddRequest == null, RespCode.PARAMS_ERROR);
         // 用户登录
         ThrowUtils.throwIf(loginUser == null, RespCode.NOT_LOGIN_ERROR);
 
@@ -79,14 +77,19 @@ public class SpaceApplicationServiceImpl implements SpaceApplicationService {
     }
 
     @Override
+    public void editSpace(Space space, User loginUser) {
+        spaceDomainService.editSpace(space, loginUser);
+    }
+
+    @Override
     public Space getSpaceById(Long id) {
         Space space = spaceDomainService.getById(id);
-        ThrowUtils.throwIf(space == null, RespCode.NOT_FOUND_ERROR, "图片信息不存在");
+        ThrowUtils.throwIf(space == null, RespCode.NOT_FOUND_ERROR, "用户私有空间不存在");
         return space;
     }
 
     @Override
-    public SpaceVO getSpaceVO(Space space, HttpServletRequest request) {
+    public SpaceVO getSpaceVO(Space space) {
         // 对象转换
         SpaceVO spaceVO = SpaceVO.SpaceToVo(space);
 
@@ -101,8 +104,8 @@ public class SpaceApplicationServiceImpl implements SpaceApplicationService {
     }
 
     @Override
-    public SpaceVO getSpaceVOById(Space space, HttpServletRequest request) {
-        return this.getSpaceVO(space, request);
+    public SpaceVO getSpaceVOById(Long id) {
+        return this.getSpaceVO(this.getSpaceById(id));
 
     }
 

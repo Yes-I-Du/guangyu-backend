@@ -49,12 +49,20 @@ public interface SpaceApplicationService {
     void updateSpace(Space space);
 
     /**
-     * 删除图片
+     * 删除用户私有空间
      *
-     * @param spaceId   图片Id
+     * @param spaceId   用户私有空间Id
      * @param loginUser 当前登录用户
      */
     void deleteSpace(long spaceId, User loginUser);
+
+    /**
+     * 用户私有空间信息编辑
+     *
+     * @param space   用户私有空间
+     * @param loginUser 当前登录用户
+     */
+    void editSpace(Space space, User loginUser);
 
     /**
      * 根据Id获取用户空间信息
@@ -68,19 +76,17 @@ public interface SpaceApplicationService {
      * 获取用户私有空间脱敏信息
      *
      * @param space   用户空间信息
-     * @param request 请求
      * @return 空间脱敏信息
      */
-    SpaceVO getSpaceVO(Space space, HttpServletRequest request);
+    SpaceVO getSpaceVO(Space space);
 
     /**
      * 根据Id获取用户私有空间脱敏信息
      *
-     * @param space   用户空间信息
-     * @param request 请求
+     * @param id   用户空间Id
      * @return 空间脱敏信息
      */
-    SpaceVO getSpaceVOById(Space space, HttpServletRequest request);
+    SpaceVO getSpaceVOById(Long id);
 
     /**
      * 分页获取空间脱敏信息
