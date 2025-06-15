@@ -21,6 +21,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SpaceLevelManager implements InitializingBean {
     private static final Map<Integer, SpaceLevel> LEVEL_MAP = new ConcurrentHashMap<>();
 
+    private static final Map<String, SpaceLevel> KEY_LEVEL_MAP = new ConcurrentHashMap<>();
+
     private final SpaceLevelConfig properties;
 
     public SpaceLevelManager(SpaceLevelConfig properties) {
@@ -30,18 +32,17 @@ public class SpaceLevelManager implements InitializingBean {
     @Override
     public void afterPropertiesSet() {
         properties.getLevels().forEach((key, config) -> {
-            LEVEL_MAP.put(config.getValue(), new SpaceLevel(
-                config.getText(),
-                config.getValue(),
-                config.getMaxCount(),
-                config.getMaxSize()
-            ));
+            SpaceLevel level =
+                new SpaceLevel(config.getText(), config.getValue(), config.getMaxCount(), config.getMaxSize());
+            LEVEL_MAP.put(config.getValue(), level);
+            KEY_LEVEL_MAP.put(key, level);
         });
     }
 
     // 根据value获取空间等级
     public static SpaceLevel getByValue(Integer value) {
-        if (value == null) return null;
+        if (value == null)
+            return null;
         return LEVEL_MAP.get(value);
     }
 
@@ -52,7 +53,7 @@ public class SpaceLevelManager implements InitializingBean {
 
     // 根据名称获取空间等级
     public SpaceLevel getByName(String name) {
-        return LEVEL_MAP.get(name);
+        return KEY_LEVEL_MAP.get(name);
     }
 
     // 根据名称获取值

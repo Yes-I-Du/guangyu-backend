@@ -1,4 +1,6 @@
-package com.guangyu.guangyubackend.interfaces.controller;/**
+package com.guangyu.guangyubackend.interfaces.controller;
+
+/**
  * 空间Controller服务
  *
  * @author Dmz Email:  * @since 2025/06/10 22:04
@@ -8,8 +10,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.guangyu.guangyubackend.application.service.PictureApplicationService;
 import com.guangyu.guangyubackend.application.service.SpaceApplicationService;
 import com.guangyu.guangyubackend.application.service.UserApplicationService;
-import com.guangyu.guangyubackend.domain.picture.entity.Picture;
-import com.guangyu.guangyubackend.domain.picture.valueobject.PictureReviewStatusEnum;
 import com.guangyu.guangyubackend.domain.space.entity.Space;
 import com.guangyu.guangyubackend.domain.space.valueobject.SpaceLevel;
 import com.guangyu.guangyubackend.domain.user.constant.UserConstant;
@@ -21,27 +21,18 @@ import com.guangyu.guangyubackend.infrastructure.common.ResultUtils;
 import com.guangyu.guangyubackend.infrastructure.exception.RespCode;
 import com.guangyu.guangyubackend.infrastructure.exception.ThrowUtils;
 import com.guangyu.guangyubackend.infrastructure.manager.space.SpaceLevelManager;
-import com.guangyu.guangyubackend.interfaces.assembler.PictureAssembler;
 import com.guangyu.guangyubackend.interfaces.assembler.SpaceAssembler;
-import com.guangyu.guangyubackend.interfaces.dto.picture.PictureEditRequest;
-import com.guangyu.guangyubackend.interfaces.dto.picture.PictureQueryRequest;
 import com.guangyu.guangyubackend.interfaces.dto.space.SpaceAddRequest;
 import com.guangyu.guangyubackend.interfaces.dto.space.SpaceEditRequest;
 import com.guangyu.guangyubackend.interfaces.dto.space.SpaceQueryRequest;
 import com.guangyu.guangyubackend.interfaces.dto.space.SpaceUpdateRequest;
-import com.guangyu.guangyubackend.interfaces.vo.picture.PictureVO;
 import com.guangyu.guangyubackend.interfaces.vo.space.SpaceVO;
-import com.guangyu.guangyubackend.interfaces.vo.user.UserVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * @author dmz xxx@163.com
@@ -57,9 +48,6 @@ public class SpaceController {
 
     @Autowired
     private UserApplicationService userApplicationService;
-
-    @Autowired
-    private PictureApplicationService pictureApplicationService;
 
     @Autowired
     private SpaceApplicationService spaceApplicationService;
