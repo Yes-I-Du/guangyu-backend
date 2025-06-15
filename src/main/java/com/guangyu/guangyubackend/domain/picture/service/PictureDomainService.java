@@ -63,7 +63,7 @@ public interface PictureDomainService {
     Integer uploadPictureByBatch(PictureUploadByBatchRequest pictureUploadByBatchRequest, User loginUser);
 
     /**
-     * 清理图片文件
+     * 异步清理图片文件
      *
      * @param oldPicture 图片信息
      */
@@ -88,7 +88,7 @@ public interface PictureDomainService {
     /**
      * 获取图片分页信息
      *
-     * @param picturePage 图片分页信息
+     * @param picturePage  图片分页信息
      * @param queryWrapper 查询条件
      * @return 该页图片信息
      */

@@ -76,7 +76,7 @@ public class CosManager {
         String webpKey = FileUtil.mainName(key) + ".webp";
         rule1.setBucket(cosClientConfig.getBucket());
         rule1.setFileId(webpKey);
-        rule1.setRule("imageMogr2/rotate/webp");
+        rule1.setRule("imageMogr2/format/webp");
         ruleList.add(rule1);
         // 缩略图处理,仅对 >= 50KB图片生成缩略图
         if (file.length() >= 50 * 1024) {
@@ -85,13 +85,22 @@ public class CosManager {
             String thumbnailKey = FileUtil.mainName(key) + "_thumbnail." + FileUtil.getSuffix(key);
             thumbnailRule.setFileId(thumbnailKey);
             // 缩放规则 /thumbnail/<Width>x<Height>>（如果大于原图宽高，则不处理）
-            thumbnailRule.setRule(String.format("imageMogr2/thumbnail/%sx%s>", 128, 128));
+            thumbnailRule.setRule(String.format("imageMogr2/thumbnail/%sx%s>", 256, 256));
             ruleList.add(thumbnailRule);
         }
 
         picOperations.setRules(ruleList);
         putObjectRequest.setPicOperations(picOperations);
         return cosClient.putObject(putObjectRequest);
+    }
+
+    /**
+     * 删除对象文件
+     *
+     * @param key 唯一键
+     */
+    public void deleteObject(String key) {
+        cosClient.deleteObject(cosClientConfig.getBucket(), key);
     }
 
 }

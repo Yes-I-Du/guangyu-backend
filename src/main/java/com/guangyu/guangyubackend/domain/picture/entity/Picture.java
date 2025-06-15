@@ -87,6 +87,11 @@ public class Picture implements Serializable {
     private Long userId;
 
     /**
+     * 图片所属空间（为空表示公共空间）
+     */
+    private Long spaceId;
+
+    /**
      * 状态：0-待审核; 1-通过; 2-拒绝
      */
     private Integer reviewStatus;

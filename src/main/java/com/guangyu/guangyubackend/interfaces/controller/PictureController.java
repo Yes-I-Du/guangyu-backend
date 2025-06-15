@@ -3,9 +3,11 @@ package com.guangyu.guangyubackend.interfaces.controller;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.guangyu.guangyubackend.application.service.PictureApplicationService;
+import com.guangyu.guangyubackend.application.service.SpaceApplicationService;
 import com.guangyu.guangyubackend.application.service.UserApplicationService;
 import com.guangyu.guangyubackend.domain.picture.entity.Picture;
 import com.guangyu.guangyubackend.domain.picture.valueobject.PictureReviewStatusEnum;
+import com.guangyu.guangyubackend.domain.space.entity.Space;
 import com.guangyu.guangyubackend.domain.user.constant.UserConstant;
 import com.guangyu.guangyubackend.domain.user.entity.User;
 import com.guangyu.guangyubackend.infrastructure.annotation.AuthCheck;
@@ -48,6 +50,9 @@ public class PictureController {
 
     @Resource
     private PictureApplicationService pictureApplicationService;
+
+    @Resource
+    private SpaceApplicationService spaceApplicationService;
 
     // TODO: 2025/5/22 未完成 本地缓存Caffeine
     // ...
@@ -154,6 +159,9 @@ public class PictureController {
         ThrowUtils.throwIf(id <= 0, RespCode.PARAMS_ERROR);
         Picture picture = pictureApplicationService.getPictureById(id);
         ThrowUtils.throwIf(picture == null, RespCode.NOT_FOUND_ERROR);
+        // 空间权限校验，只有当用户用户私有空间权限时才可以查询
+        pictureApplicationService.checkPictureAuth(userApplicationService.getLoginUser(httpServletRequest), picture);
+
         return ResultUtils.success(pictureApplicationService.getPictureVOById(picture, httpServletRequest));
     }
 
@@ -188,11 +196,24 @@ public class PictureController {
         long size = pictureQueryRequest.getPageSize();
         // 限制爬虫
         ThrowUtils.throwIf(size > 20, RespCode.PARAMS_ERROR);
-        // TODO:空间权限校验，分为公共图库和用户私有图库
+        // 空间权限校验
+        Long spaceId = pictureQueryRequest.getSpaceId();
+        if (spaceId == null) {
+            // 公共图库
+            pictureQueryRequest.setSpaceIdNull(true);
+            // 限制用户查看条件(默认普通用户只能查看已过审的图片)
+            pictureQueryRequest.setReviewStatus(PictureReviewStatusEnum.PASS.getValue());
 
-        // 公共图库
-        // 限制用户查看条件(默认普通用户只能查看已过审的图片)
-        pictureQueryRequest.setReviewStatus(PictureReviewStatusEnum.PASS.getValue());
+        } else {
+            // 用户私有空间
+            pictureQueryRequest.setSpaceIdNull(false);
+            // 登录用户权限校验用户
+            Space space = spaceApplicationService.getSpaceById(spaceId);
+            ThrowUtils.throwIf(space == null, RespCode.NOT_FOUND_ERROR, "未找到该用户私有空间");
+
+            spaceApplicationService.checkSpaceAuth(userApplicationService.getLoginUser(request), space);
+        }
+
         // 查询数据库
         Page<Picture> picturePage = pictureApplicationService.page(new Page<>(current, size),
             pictureApplicationService.getQueryWrapper(pictureQueryRequest));
@@ -235,8 +256,10 @@ public class PictureController {
     //        int uploadCount = pictureService.uploadPictureByBatch(pictureUploadByBatchRequest, loginUser);
     //        return ResultUtils.success(uploadCount);
     //    }
-
-
+        @PostMapping("/upload/batch")
+        @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+            public BaseResponse<Integer> uploadPictureByBatch(
+                @RequestBody PictureUploadByBatchRequest pictureUploadByBatchRequest, HttpServletRequest request) {return ResultUtils.success(20);}
 
     /**
      * 获取图片标签分类列表

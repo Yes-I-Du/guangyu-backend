@@ -37,13 +37,7 @@ public class SpaceApplicationServiceImpl implements SpaceApplicationService {
     private UserApplicationService userApplicationService;
 
     @Resource
-    private PictureApplicationService pictureApplicationService;
-
-    @Resource
     private SpaceDomainService spaceDomainService;
-
-    @Resource
-    private SpaceLevelManager spaceLevelManager;
 
     @Override
     public void vaildSpace(Space space, boolean addFlag) {

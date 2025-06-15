@@ -76,6 +76,11 @@ public class PictureQueryRequest extends PageRequest implements Serializable {
     private Long userId;
 
     /**
+     * 用户私有空间Id
+     */
+    private Long spaceId;
+
+    /**
      * 状态：0-待审核; 1-通过; 2-拒绝
      */
     private Integer reviewStatus;
@@ -95,10 +100,14 @@ public class PictureQueryRequest extends PageRequest implements Serializable {
      */
     private Date reviewTime;
 
-
     /**
      * 搜索词（同时搜名称、简介等）
      */
     private String searchText;
+
+    /**
+     * 是否只查询空SpaceID的数据 true:仅查询公共图库 false:查询公共图库以及用户私有图库
+     */
+    private boolean spaceIdNull;
 }
 
