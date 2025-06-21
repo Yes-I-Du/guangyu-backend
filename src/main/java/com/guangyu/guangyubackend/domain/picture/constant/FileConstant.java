@@ -17,7 +17,7 @@ public interface FileConstant {
     public static final int INTRODUCTION_LENGTH = 800;
 
     /* 允许上传图片最大大小：2M */
-    public static final long PICTURE_MAX_SIZE = 2 * 1024 * 1024L;
+    public static final long PICTURE_MAX_SIZE = 5 * 1024 * 1024L;
 
     /* 允许上传图片格式 */
     public static final List<String> ALLOW_FORMAT_LIST = Arrays.asList("jpeg", "jpg", "png", "webp");

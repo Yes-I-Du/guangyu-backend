@@ -15,6 +15,9 @@ import com.guangyu.guangyubackend.domain.space.entity.Space;
 import com.guangyu.guangyubackend.domain.space.repository.SpaceRepository;
 import com.guangyu.guangyubackend.domain.user.entity.User;
 import com.guangyu.guangyubackend.infrastructure.api.CosManager;
+import com.guangyu.guangyubackend.infrastructure.api.aliyunai.ImageOutPaintingTaskApi;
+import com.guangyu.guangyubackend.infrastructure.api.aliyunai.model.CreateImageOutPaintingTaskResponse;
+import com.guangyu.guangyubackend.infrastructure.api.aliyunai.model.ImageOutPaintingRequest;
 import com.guangyu.guangyubackend.infrastructure.exception.BusinessException;
 import com.guangyu.guangyubackend.infrastructure.exception.RespCode;
 import com.guangyu.guangyubackend.infrastructure.exception.ThrowUtils;
@@ -38,6 +41,7 @@ import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Dmz
@@ -68,6 +72,9 @@ public class PictureDomainServiceImpl implements PictureDomainService {
 
     @Autowired
     private CosManager cosManager;
+
+    @Resource
+    private ImageOutPaintingTaskApi imageOutPaintingTaskApi;
 
     @Override
     public PictureVO uploadPicture(Object inputFileSource, PictureUploadRequest pictureUploadRequest, User loginUser) {
@@ -404,12 +411,15 @@ public class PictureDomainServiceImpl implements PictureDomainService {
             // 删除图片信息
             boolean saveResult = pictureRepository.removeById(pictureId);
             ThrowUtils.throwIf(!saveResult, RespCode.OPERATION_ERROR, "图片删除失败");
+            Long spaceId = existPicture.getSpaceId();
             // 删除图片信息后，用户空间剩余容量信息更新
-            // 更新空间的使用额度
-            boolean update = spaceRepository.lambdaUpdate().eq(Space::getId, existPicture.getSpaceId())
-                .setSql("totalSize = totalSize - " + existPicture.getPicSize()).setSql("totalCount = totalCount - 1")
-                .update();
-            ThrowUtils.throwIf(!update, RespCode.OPERATION_ERROR, "用户空间剩余容量更新失败");
+            if (spaceId != null) {
+                // 更新空间的使用额度
+                boolean update = spaceRepository.lambdaUpdate().eq(Space::getId, spaceId)
+                    .setSql("totalSize = totalSize - " + existPicture.getPicSize())
+                    .setSql("totalCount = totalCount - 1").update();
+                ThrowUtils.throwIf(!update, RespCode.OPERATION_ERROR, "用户空间剩余容量更新失败");
+            }
             return true;
         });
         // 异步清理图片
@@ -464,6 +474,25 @@ public class PictureDomainServiceImpl implements PictureDomainService {
     @Override
     public void editPictureByBatch(PictureEditByBatchRequest pictureEditByBatchRequest, User loginUser) {
 
+    }
+
+    @Override
+    public CreateImageOutPaintingTaskResponse createPictureOutPaintingTask(
+        CreatePictureOutPaintingRequest createPictureOutPaintingRequest, User loginUser) {
+        // 获取图片信息
+        Long pictureId = createPictureOutPaintingRequest.getPictureId();
+        Picture picture = Optional.ofNullable(pictureRepository.getById(pictureId))
+            .orElseThrow(() -> new BusinessException(RespCode.NOT_FOUND_ERROR, "图片不存在"));
+        // 权限校验
+        this.checkPictureAuth(loginUser, picture);
+        // 创建扩图任务
+        ImageOutPaintingRequest imageOutPaintingRequest = new ImageOutPaintingRequest();
+        ImageOutPaintingRequest.Input imageOutPaintingRequestInput = new ImageOutPaintingRequest.Input();
+        imageOutPaintingRequestInput.setImageUrl(picture.getUrl());
+        imageOutPaintingRequest.setInput(imageOutPaintingRequestInput);
+        imageOutPaintingRequest.setParameters(createPictureOutPaintingRequest.getParameters());
+
+        return imageOutPaintingTaskApi.createImageOutPaintingTask(imageOutPaintingRequest);
     }
 
 }

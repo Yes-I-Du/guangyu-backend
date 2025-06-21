@@ -26,7 +26,7 @@ public class PictureUploadByFile extends PictureUploadTemplate {
         ThrowUtils.throwIf(multipartFile == null || multipartFile.isEmpty(), RespCode.PARAMS_ERROR, "图片不能为空");
         // 图片大小校验
         long fileSize = multipartFile.getSize();
-        ThrowUtils.throwIf(fileSize > FileConstant.PICTURE_MAX_SIZE, RespCode.PARAMS_ERROR, "图片大小不能超过2M");
+        ThrowUtils.throwIf(fileSize > FileConstant.PICTURE_MAX_SIZE, RespCode.PARAMS_ERROR, "图片大小不能超过5M");
         // 图片后缀校验
         // 获取文件后缀
         String fileSuffix = FileUtil.getSuffix(multipartFile.getOriginalFilename());

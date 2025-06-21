@@ -1,5 +1,6 @@
 package com.guangyu.guangyubackend.interfaces.controller;
 
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.guangyu.guangyubackend.application.service.PictureApplicationService;
@@ -11,6 +12,9 @@ import com.guangyu.guangyubackend.domain.space.entity.Space;
 import com.guangyu.guangyubackend.domain.user.constant.UserConstant;
 import com.guangyu.guangyubackend.domain.user.entity.User;
 import com.guangyu.guangyubackend.infrastructure.annotation.AuthCheck;
+import com.guangyu.guangyubackend.infrastructure.api.aliyunai.ImageOutPaintingTaskApi;
+import com.guangyu.guangyubackend.infrastructure.api.aliyunai.model.CreateImageOutPaintingTaskResponse;
+import com.guangyu.guangyubackend.infrastructure.api.aliyunai.model.GetImageOutPaintingTaskResponse;
 import com.guangyu.guangyubackend.infrastructure.common.BaseResponse;
 import com.guangyu.guangyubackend.infrastructure.common.DeleteRequest;
 import com.guangyu.guangyubackend.infrastructure.common.ResultUtils;
@@ -53,6 +57,9 @@ public class PictureController {
 
     @Resource
     private SpaceApplicationService spaceApplicationService;
+
+    @Resource
+    private ImageOutPaintingTaskApi imageOutPaintingTaskApi;
 
     // TODO: 2025/5/22 未完成 本地缓存Caffeine
     // ...
@@ -256,10 +263,12 @@ public class PictureController {
     //        int uploadCount = pictureService.uploadPictureByBatch(pictureUploadByBatchRequest, loginUser);
     //        return ResultUtils.success(uploadCount);
     //    }
-        @PostMapping("/upload/batch")
-        @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
-            public BaseResponse<Integer> uploadPictureByBatch(
-                @RequestBody PictureUploadByBatchRequest pictureUploadByBatchRequest, HttpServletRequest request) {return ResultUtils.success(20);}
+    @PostMapping("/upload/batch")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<Integer> uploadPictureByBatch(
+        @RequestBody PictureUploadByBatchRequest pictureUploadByBatchRequest, HttpServletRequest request) {
+        return ResultUtils.success(20);
+    }
 
     /**
      * 获取图片标签分类列表
@@ -294,5 +303,36 @@ public class PictureController {
         return ResultUtils.success(true);
     }
 
+    /**
+     * 创建 AI 扩图任务
+     *
+     * @param createPictureOutPaintingTaskRequest 扩图任务请求
+     * @param request                             http请求
+     * @return 扩图任务响应
+     */
+    @PostMapping("/out_painting/create_task")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<CreateImageOutPaintingTaskResponse> createPictureOutPaintingTask(
+        @RequestBody CreatePictureOutPaintingRequest createPictureOutPaintingTaskRequest, HttpServletRequest request) {
+        if (createPictureOutPaintingTaskRequest == null || createPictureOutPaintingTaskRequest.getPictureId() == null) {
+            throw new BusinessException(RespCode.PARAMS_ERROR, "请求错误");
+        }
+        User loginUser = userApplicationService.getLoginUser(request);
+        CreateImageOutPaintingTaskResponse response =
+            pictureApplicationService.createPictureOutPaintingTask(createPictureOutPaintingTaskRequest, loginUser);
+        return ResultUtils.success(response);
+    }
+
+    /**
+     * 查询 AI 扩图任务
+     *
+     * @param taskId 任务ID
+     */
+    @GetMapping("/out_painting/get_task")
+    public BaseResponse<GetImageOutPaintingTaskResponse> getPictureOutPaintingTask(String taskId) {
+        ThrowUtils.throwIf(StrUtil.isBlank(taskId), RespCode.PARAMS_ERROR);
+        GetImageOutPaintingTaskResponse task = imageOutPaintingTaskApi.getImageOutPaintingTask(taskId);
+        return ResultUtils.success(task);
+    }
 }
 

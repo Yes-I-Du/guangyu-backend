@@ -8,6 +8,7 @@ import com.guangyu.guangyubackend.application.service.UserApplicationService;
 import com.guangyu.guangyubackend.domain.picture.entity.Picture;
 import com.guangyu.guangyubackend.domain.picture.service.PictureDomainService;
 import com.guangyu.guangyubackend.domain.user.entity.User;
+import com.guangyu.guangyubackend.infrastructure.api.aliyunai.model.CreateImageOutPaintingTaskResponse;
 import com.guangyu.guangyubackend.infrastructure.exception.RespCode;
 import com.guangyu.guangyubackend.infrastructure.exception.ThrowUtils;
 import com.guangyu.guangyubackend.interfaces.dto.picture.*;
@@ -56,7 +57,7 @@ public class PictureApplicationServiceImpl implements PictureApplicationService 
     }
 
     @Override
-    public PictureVO getPictureVO(Picture picture,HttpServletRequest request) {
+    public PictureVO getPictureVO(Picture picture, HttpServletRequest request) {
         // 对象转换
         PictureVO pictureVO = PictureVO.PictureToVo(picture);
 
@@ -79,7 +80,7 @@ public class PictureApplicationServiceImpl implements PictureApplicationService 
 
     @Override
     public PictureVO getPictureVOById(Picture picture, HttpServletRequest request) {
-        return this.getPictureVO(picture,request);
+        return this.getPictureVO(picture, request);
 
     }
 
@@ -170,6 +171,12 @@ public class PictureApplicationServiceImpl implements PictureApplicationService 
     @Override
     public void editPictureByBatch(PictureEditByBatchRequest pictureEditByBatchRequest, User loginUser) {
         pictureDomainService.editPictureByBatch(pictureEditByBatchRequest, loginUser);
+    }
+
+    @Override
+    public CreateImageOutPaintingTaskResponse createPictureOutPaintingTask(
+        CreatePictureOutPaintingRequest createPictureOutPaintingRequest, User loginUser) {
+        return pictureDomainService.createPictureOutPaintingTask(createPictureOutPaintingRequest, loginUser);
     }
 
 }
