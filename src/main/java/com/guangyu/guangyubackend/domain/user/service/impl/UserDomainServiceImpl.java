@@ -6,19 +6,18 @@ import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.guangyu.guangyubackend.domain.user.constant.UserConstant;
 import com.guangyu.guangyubackend.domain.user.entity.User;
 import com.guangyu.guangyubackend.domain.user.repository.UserRepository;
 import com.guangyu.guangyubackend.domain.user.service.UserDomainService;
 import com.guangyu.guangyubackend.domain.user.valueobject.UserRoleEnum;
 import com.guangyu.guangyubackend.infrastructure.exception.BusinessException;
-import com.guangyu.guangyubackend.infrastructure.exception.RespCode;
+import com.guangyu.guangyubackend.infrastructure.common.RespCode;
 import com.guangyu.guangyubackend.infrastructure.exception.ThrowUtils;
-import com.guangyu.guangyubackend.infrastructure.mapper.UserMapper;
 import com.guangyu.guangyubackend.interfaces.dto.user.UserQueryRequest;
 import com.guangyu.guangyubackend.interfaces.vo.user.LoginUserVO;
 import com.guangyu.guangyubackend.interfaces.vo.user.UserVO;
+import com.guangyu.guangyubackend.shared.auth.StpKit;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
@@ -49,7 +48,8 @@ public class UserDomainServiceImpl implements UserDomainService {
         // 账号重复检查
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("userAccount", userAccount);
-        ThrowUtils.throwIf(userRepository.getBaseMapper().selectCount(queryWrapper) > 0, RespCode.PARAMS_ERROR, "账号已存在");
+        ThrowUtils.throwIf(userRepository.getBaseMapper().selectCount(queryWrapper) > 0, RespCode.PARAMS_ERROR,
+            "账号已存在");
 
         // 加密
         String encryptPassword = this.getEncryptPassword(userPassword);
@@ -84,6 +84,8 @@ public class UserDomainServiceImpl implements UserDomainService {
         httpServletRequest.getSession().setAttribute(USER_LOGIN_STATUS, user);
         // 记录用户登陆状态到Sa-token，以便于空间鉴权
         // 需要保证用户信息与Session中的过期信息一致
+        StpKit.SPACE.login(user.getId());
+        StpKit.SPACE.getSession().set(USER_LOGIN_STATUS, user);
 
         // 返回用户脱敏信息
         return this.getLoginUserVO(user);

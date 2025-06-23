@@ -19,7 +19,7 @@ import com.guangyu.guangyubackend.infrastructure.api.aliyunai.ImageOutPaintingTa
 import com.guangyu.guangyubackend.infrastructure.api.aliyunai.model.CreateImageOutPaintingTaskResponse;
 import com.guangyu.guangyubackend.infrastructure.api.aliyunai.model.ImageOutPaintingRequest;
 import com.guangyu.guangyubackend.infrastructure.exception.BusinessException;
-import com.guangyu.guangyubackend.infrastructure.exception.RespCode;
+import com.guangyu.guangyubackend.infrastructure.common.RespCode;
 import com.guangyu.guangyubackend.infrastructure.exception.ThrowUtils;
 import com.guangyu.guangyubackend.infrastructure.manager.upload.model.dto.file.UploadPictureResult;
 import com.guangyu.guangyubackend.interfaces.dto.picture.*;

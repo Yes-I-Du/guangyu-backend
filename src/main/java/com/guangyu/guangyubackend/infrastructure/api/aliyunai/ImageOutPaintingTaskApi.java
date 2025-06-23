@@ -9,13 +9,10 @@ import com.guangyu.guangyubackend.infrastructure.api.aliyunai.model.CreateImageO
 import com.guangyu.guangyubackend.infrastructure.api.aliyunai.model.GetImageOutPaintingTaskResponse;
 import com.guangyu.guangyubackend.infrastructure.api.aliyunai.model.ImageOutPaintingRequest;
 import com.guangyu.guangyubackend.infrastructure.exception.BusinessException;
-import com.guangyu.guangyubackend.infrastructure.exception.RespCode;
+import com.guangyu.guangyubackend.infrastructure.common.RespCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Value;
-
-import java.io.IOException;
-import java.util.Map;
 
 /**
  * AI图像服务扩展API

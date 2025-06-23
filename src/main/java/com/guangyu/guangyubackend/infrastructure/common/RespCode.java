@@ -1,4 +1,4 @@
-package com.guangyu.guangyubackend.infrastructure.exception;
+package com.guangyu.guangyubackend.infrastructure.common;
 
 import lombok.Getter;
 

@@ -2,7 +2,7 @@ package com.guangyu.guangyubackend.infrastructure.aop;
 
 import com.guangyu.guangyubackend.infrastructure.annotation.AuthCheck;
 import com.guangyu.guangyubackend.infrastructure.exception.BusinessException;
-import com.guangyu.guangyubackend.infrastructure.exception.RespCode;
+import com.guangyu.guangyubackend.infrastructure.common.RespCode;
 import com.guangyu.guangyubackend.domain.user.entity.User;
 import com.guangyu.guangyubackend.domain.user.valueobject.UserRoleEnum;
 import com.guangyu.guangyubackend.application.service.UserApplicationService;

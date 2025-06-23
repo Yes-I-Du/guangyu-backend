@@ -12,7 +12,7 @@ import com.guangyu.guangyubackend.infrastructure.api.CosManager;
 import com.guangyu.guangyubackend.infrastructure.config.CosClientConfig;
 import com.guangyu.guangyubackend.domain.picture.constant.FileConstant;
 import com.guangyu.guangyubackend.infrastructure.exception.BusinessException;
-import com.guangyu.guangyubackend.infrastructure.exception.RespCode;
+import com.guangyu.guangyubackend.infrastructure.common.RespCode;
 import com.guangyu.guangyubackend.infrastructure.exception.ThrowUtils;
 import com.guangyu.guangyubackend.infrastructure.manager.upload.model.dto.file.UploadPictureResult;
 import com.qcloud.cos.model.PutObjectResult;

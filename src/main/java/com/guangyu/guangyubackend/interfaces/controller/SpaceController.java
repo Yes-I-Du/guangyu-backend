@@ -7,7 +7,6 @@ package com.guangyu.guangyubackend.interfaces.controller;
  */
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.guangyu.guangyubackend.application.service.PictureApplicationService;
 import com.guangyu.guangyubackend.application.service.SpaceApplicationService;
 import com.guangyu.guangyubackend.application.service.UserApplicationService;
 import com.guangyu.guangyubackend.domain.space.entity.Space;
@@ -18,7 +17,7 @@ import com.guangyu.guangyubackend.infrastructure.annotation.AuthCheck;
 import com.guangyu.guangyubackend.infrastructure.common.BaseResponse;
 import com.guangyu.guangyubackend.infrastructure.common.DeleteRequest;
 import com.guangyu.guangyubackend.infrastructure.common.ResultUtils;
-import com.guangyu.guangyubackend.infrastructure.exception.RespCode;
+import com.guangyu.guangyubackend.infrastructure.common.RespCode;
 import com.guangyu.guangyubackend.infrastructure.exception.ThrowUtils;
 import com.guangyu.guangyubackend.infrastructure.manager.space.SpaceLevelManager;
 import com.guangyu.guangyubackend.interfaces.assembler.SpaceAssembler;

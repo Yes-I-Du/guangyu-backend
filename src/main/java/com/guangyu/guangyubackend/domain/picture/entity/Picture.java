@@ -8,7 +8,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import com.guangyu.guangyubackend.domain.picture.constant.FileConstant;
-import com.guangyu.guangyubackend.infrastructure.exception.RespCode;
+import com.guangyu.guangyubackend.infrastructure.common.RespCode;
 import com.guangyu.guangyubackend.infrastructure.exception.ThrowUtils;
 import lombok.Data;
 

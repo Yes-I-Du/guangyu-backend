@@ -8,7 +8,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 @SpringBootApplication
-@MapperScan("com.guangyu.guangyubackend.mapper")
+@MapperScan("com.guangyu.guangyubackend.infrastructure.mapper")
 @EnableAspectJAutoProxy(exposeProxy = true)
 public class GuangyuBackendApplication {
 

@@ -7,7 +7,7 @@ import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.guangyu.guangyubackend.infrastructure.config.CosClientConfig;
 import com.guangyu.guangyubackend.infrastructure.exception.BusinessException;
-import com.guangyu.guangyubackend.infrastructure.exception.RespCode;
+import com.guangyu.guangyubackend.infrastructure.common.RespCode;
 import com.guangyu.guangyubackend.infrastructure.api.CosManager;
 import com.guangyu.guangyubackend.infrastructure.manager.upload.model.dto.file.UploadPictureResult;
 import com.qcloud.cos.model.PutObjectResult;

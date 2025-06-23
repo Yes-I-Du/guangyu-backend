@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.guangyu.guangyubackend.domain.user.service.UserDomainService;
 import com.guangyu.guangyubackend.infrastructure.common.DeleteRequest;
 import com.guangyu.guangyubackend.infrastructure.exception.BusinessException;
-import com.guangyu.guangyubackend.infrastructure.exception.RespCode;
+import com.guangyu.guangyubackend.infrastructure.common.RespCode;
 import com.guangyu.guangyubackend.infrastructure.exception.ThrowUtils;
 import com.guangyu.guangyubackend.interfaces.dto.user.UserLoginRequest;
 import com.guangyu.guangyubackend.interfaces.dto.user.UserQueryRequest;
@@ -33,7 +33,7 @@ import java.util.Set;
  */
 @Service
 @Slf4j
-public class UserApplicationServiceImpl extends ServiceImpl<UserMapper, User> implements UserApplicationService {
+public class UserApplicationServiceImpl implements UserApplicationService {
 
     @Resource
     private UserDomainService userDomainService;

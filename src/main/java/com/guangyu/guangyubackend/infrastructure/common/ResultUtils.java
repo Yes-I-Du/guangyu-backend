@@ -1,7 +1,5 @@
 package com.guangyu.guangyubackend.infrastructure.common;
 
-import com.guangyu.guangyubackend.infrastructure.exception.RespCode;
-
 /**
  * 响应结果工具类
  *

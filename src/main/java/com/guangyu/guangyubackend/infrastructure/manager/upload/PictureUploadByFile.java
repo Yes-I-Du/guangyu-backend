@@ -2,7 +2,7 @@ package com.guangyu.guangyubackend.infrastructure.manager.upload;
 
 import cn.hutool.core.io.FileUtil;
 import com.guangyu.guangyubackend.domain.picture.constant.FileConstant;
-import com.guangyu.guangyubackend.infrastructure.exception.RespCode;
+import com.guangyu.guangyubackend.infrastructure.common.RespCode;
 import com.guangyu.guangyubackend.infrastructure.exception.ThrowUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;

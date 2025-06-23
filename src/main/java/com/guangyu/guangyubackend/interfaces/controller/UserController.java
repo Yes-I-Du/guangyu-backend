@@ -8,7 +8,7 @@ import com.guangyu.guangyubackend.infrastructure.annotation.AuthCheck;
 import com.guangyu.guangyubackend.infrastructure.common.BaseResponse;
 import com.guangyu.guangyubackend.infrastructure.common.DeleteRequest;
 import com.guangyu.guangyubackend.infrastructure.common.ResultUtils;
-import com.guangyu.guangyubackend.infrastructure.exception.RespCode;
+import com.guangyu.guangyubackend.infrastructure.common.RespCode;
 import com.guangyu.guangyubackend.infrastructure.exception.ThrowUtils;
 import com.guangyu.guangyubackend.interfaces.assembler.UserAssembler;
 import com.guangyu.guangyubackend.interfaces.dto.user.*;

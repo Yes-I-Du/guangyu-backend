@@ -7,7 +7,7 @@ import cn.hutool.http.HttpUtil;
 import cn.hutool.http.Method;
 import com.guangyu.guangyubackend.domain.picture.constant.FileConstant;
 import com.guangyu.guangyubackend.infrastructure.exception.BusinessException;
-import com.guangyu.guangyubackend.infrastructure.exception.RespCode;
+import com.guangyu.guangyubackend.infrastructure.common.RespCode;
 import com.guangyu.guangyubackend.infrastructure.exception.ThrowUtils;
 import org.springframework.stereotype.Service;
 
