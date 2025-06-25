@@ -84,11 +84,12 @@ public class PictureDomainServiceImpl implements PictureDomainService {
             // 获取空间信息
             Space existSpace = spaceApplicationService.getSpaceById(spaceId);
             ThrowUtils.throwIf(existSpace == null, RespCode.NOT_FOUND_ERROR, "空间不存在");
-            // 空间权限校验(只有用户空间的管理者，即空间的拥有者(创建者)有图片上传权限)
-            if (!existSpace.getUserId().equals(loginUser.getId())) {
-                ThrowUtils.throwIf(true, RespCode.NO_AUTH_ERROR, "该登录用户暂时无该私有空间操作权限");
-            }
-
+            //            2025/06/25 空间权限校验使用SaToken方式 delete start
+            //            // 空间权限校验(只有用户空间的管理者，即空间的拥有者(创建者)有图片上传权限)
+            //            if (!existSpace.getUserId().equals(loginUser.getId())) {
+            //                ThrowUtils.throwIf(true, RespCode.NO_AUTH_ERROR, "该登录用户暂时无该私有空间操作权限");
+            //            }
+            //            2025/06/25  delete end
             // 空间图片数量额度校验
             ThrowUtils.throwIf(existSpace.getTotalCount() >= existSpace.getMaxCount(), RespCode.PARAMS_ERROR,
                 "空间图片数量已达到上限");
@@ -104,10 +105,12 @@ public class PictureDomainServiceImpl implements PictureDomainService {
         if (pictureId != null) {
             pictureExist = pictureRepository.getById(pictureId);
             ThrowUtils.throwIf(pictureExist == null, RespCode.NOT_FOUND_ERROR, "图片不存在");
+            //            2025/06/25 图片权限校验使用SaToken方式 delete start
             // 图片权限校验(只有该图片的拥护者(创建者)以及Admin有图片更新权限或编辑权限)
-            if (!pictureExist.getUserId().equals(loginUser.getId()) && !loginUser.isAdmin()) {
-                ThrowUtils.throwIf(true, RespCode.NO_AUTH_ERROR, "该登录用户暂时无该图片操作权限");
-            }
+            //            if (!pictureExist.getUserId().equals(loginUser.getId()) && !loginUser.isAdmin()) {
+            //                ThrowUtils.throwIf(true, RespCode.NO_AUTH_ERROR, "该登录用户暂时无该图片操作权限");
+            //            }
+            //            2025/06/25  delete end
             // 图片空间一致性校验
             if (spaceId == null) {
                 // 如果spaceId为空(更新请求中不含SpaceId)，则从图片信息中获取spaceId

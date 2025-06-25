@@ -1,6 +1,7 @@
 package com.guangyu.guangyubackend.shared.auth;
 
 import cn.dev33.satoken.stp.StpInterface;
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.ObjectUtil;
@@ -156,11 +157,14 @@ public class StpInterfaceImpl implements StpInterface {
     }
 
     /**
-     * 本项目中不使用。返回一个账号所拥有的角色标识集合 (权限与角色可分开校验)
+     * 返回一个账号所拥有的角色标识集合 (权限与角色可分开校验)
      */
     @Override
     public List<String> getRoleList(Object loginId, String loginType) {
-        return new ArrayList<>();
+
+        // 从当前登录用户信息中获取角色
+        User user = (User) StpKit.SPACE.getSessionByLoginId(loginId).get(UserConstant.USER_LOGIN_STATUS);
+        return Collections.singletonList(user.getUserRole());
     }
 
     /**

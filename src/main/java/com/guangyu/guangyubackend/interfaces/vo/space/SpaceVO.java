@@ -6,7 +6,9 @@ import com.guangyu.guangyubackend.domain.space.entity.Space;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 用户空间信息试图包装类
@@ -38,7 +40,6 @@ public class SpaceVO implements Serializable {
      * 空间类型：0-私有 1-团队
      */
     private Integer spaceType;
-
 
     /**
      * 空间图片的最大总大小
@@ -84,6 +85,11 @@ public class SpaceVO implements Serializable {
      * 创建空间用户信息
      */
     private UserVO user;
+
+    /**
+     * 权限列表
+     */
+    private List<String> permissionList = new ArrayList<>();
 
     /**
      * 用户空间信息视图封装类 -> 空间对象

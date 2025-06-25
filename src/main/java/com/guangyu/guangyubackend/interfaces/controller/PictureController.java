@@ -24,6 +24,10 @@ import com.guangyu.guangyubackend.interfaces.assembler.PictureAssembler;
 import com.guangyu.guangyubackend.interfaces.dto.picture.*;
 import com.guangyu.guangyubackend.interfaces.vo.picture.PictureTagCategory;
 import com.guangyu.guangyubackend.interfaces.vo.picture.PictureVO;
+import com.guangyu.guangyubackend.shared.auth.SpaceUserAuthManager;
+import com.guangyu.guangyubackend.shared.auth.StpKit;
+import com.guangyu.guangyubackend.shared.auth.annotation.SaSpaceCheckPermission;
+import com.guangyu.guangyubackend.shared.auth.model.SpaceUserPermissionConstant;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -54,6 +58,9 @@ public class PictureController {
     @Resource
     private ImageOutPaintingTaskApi imageOutPaintingTaskApi;
 
+    @Resource
+    private SpaceUserAuthManager spaceUserAuthManager;
+
     // TODO: 2025/5/22 未完成 本地缓存Caffeine
     // ...
     // ...
@@ -67,6 +74,7 @@ public class PictureController {
      * @return 图片信息
      */
     @PostMapping("/upload")
+    @SaSpaceCheckPermission(value = SpaceUserPermissionConstant.PICTURE_UPLOAD)
     public BaseResponse<PictureVO> uploadPicture(@RequestPart("file") MultipartFile multipartFile,
         PictureUploadRequest pictureUploadRequest, HttpServletRequest httpServletRequest) {
         User loginUser = userApplicationService.getLoginUser(httpServletRequest);
@@ -82,6 +90,7 @@ public class PictureController {
      * @return 图片信息
      */
     @PostMapping("/upload/url")
+    @SaSpaceCheckPermission(value = SpaceUserPermissionConstant.PICTURE_UPLOAD)
     public BaseResponse<PictureVO> uploadPictureByUrl(@RequestBody PictureUploadRequest pictureUploadRequest,
         HttpServletRequest httpServletRequest) {
         User loginUser = userApplicationService.getLoginUser(httpServletRequest);
@@ -98,6 +107,7 @@ public class PictureController {
      * @return 删除结果
      */
     @PostMapping("/delete")
+    @SaSpaceCheckPermission(value = SpaceUserPermissionConstant.PICTURE_DELETE)
     public BaseResponse<Boolean> deletePicture(@RequestBody DeleteRequest deleteRequest,
         HttpServletRequest httpServletRequest) {
         // 请求校验
@@ -156,13 +166,31 @@ public class PictureController {
     @GetMapping("/get/vo/{id}")
     public BaseResponse<PictureVO> getPictureVOById(@PathVariable("id") Long id,
         HttpServletRequest httpServletRequest) {
+        // 参数校验
         ThrowUtils.throwIf(id <= 0, RespCode.PARAMS_ERROR);
+        // 获取图片信息
         Picture picture = pictureApplicationService.getPictureById(id);
         ThrowUtils.throwIf(picture == null, RespCode.NOT_FOUND_ERROR);
+        // 2025/06/25 空间权限校验修改为Satoken编程式权限校验 update start
+        Space space = null;
+        Long spaceId = picture.getSpaceId();
+        if (spaceId != null) {
+            // 权限校验，图片编辑权限
+            boolean picturePermission = StpKit.SPACE.hasPermission(SpaceUserPermissionConstant.PICTURE_VIEW);
+            ThrowUtils.throwIf(!picturePermission, RespCode.NO_AUTH_ERROR, "该登录用户暂时无该图片操作权限");
+            space = spaceApplicationService.getSpaceById(spaceId);
+            ThrowUtils.throwIf(space == null, RespCode.NOT_FOUND_ERROR, "该图片所属空间不存在");
+        }
         // 空间权限校验，只有当用户用户私有空间权限时才可以查询
-        pictureApplicationService.checkPictureAuth(userApplicationService.getLoginUser(httpServletRequest), picture);
+        //        pictureApplicationService.checkPictureAuth(userApplicationService.getLoginUser(httpServletRequest), picture);
+        // 获取权限列表
+        User loginUser = userApplicationService.getLoginUser(httpServletRequest);
+        List<String> permissionList = spaceUserAuthManager.getPermissionList(space, loginUser);
+        PictureVO pictureVO = pictureApplicationService.getPictureVOById(picture, httpServletRequest);
+        pictureVO.setPermissionList(permissionList);
+        // 2025/06/25 end
 
-        return ResultUtils.success(pictureApplicationService.getPictureVOById(picture, httpServletRequest));
+        return ResultUtils.success(pictureVO);
     }
 
     /*
@@ -207,11 +235,14 @@ public class PictureController {
         } else {
             // 用户私有空间
             pictureQueryRequest.setSpaceIdNull(false);
-            // 登录用户权限校验用户
+            // 获取空间信息
             Space space = spaceApplicationService.getSpaceById(spaceId);
             ThrowUtils.throwIf(space == null, RespCode.NOT_FOUND_ERROR, "未找到该用户私有空间");
-
-            spaceApplicationService.checkSpaceAuth(userApplicationService.getLoginUser(request), space);
+            // 登录用户权限校验用户
+            // 权限校验，图片编辑权限
+            boolean picturePermission = StpKit.SPACE.hasPermission(SpaceUserPermissionConstant.PICTURE_VIEW);
+            ThrowUtils.throwIf(!picturePermission, RespCode.NO_AUTH_ERROR, "该登录用户暂时无该图片操作权限");
+            // spaceApplicationService.checkSpaceAuth(userApplicationService.getLoginUser(request), space);
         }
 
         // 查询数据库
@@ -230,6 +261,7 @@ public class PictureController {
      * @return 编辑结果
      */
     @PostMapping("/edit")
+    @SaSpaceCheckPermission(value = SpaceUserPermissionConstant.PICTURE_EDIT)
     public BaseResponse<Boolean> editPicture(@RequestBody PictureEditRequest pictureEditRequest,
         HttpServletRequest request) {
         ThrowUtils.throwIf(pictureEditRequest == null || pictureEditRequest.getId() <= 0, RespCode.PARAMS_ERROR);
@@ -264,21 +296,6 @@ public class PictureController {
     }
 
     /**
-     * 获取图片标签分类列表
-     *
-     * @return
-     */
-    @GetMapping("/tag_category")
-    public BaseResponse<PictureTagCategory> listPictureTagCategory() {
-        PictureTagCategory pictureTagCategory = new PictureTagCategory();
-        List<String> tagList = Arrays.asList("热门", "搞笑", "生活", "高清", "艺术", "校园", "背景", "简历", "创意");
-        List<String> categoryList = Arrays.asList("模板", "电商", "表情包", "素材", "海报");
-        pictureTagCategory.setTagList(tagList);
-        pictureTagCategory.setCategoryList(categoryList);
-        return ResultUtils.success(pictureTagCategory);
-    }
-
-    /**
      * 图片审核 (管理员权限)
      *
      * @param pictureReviewRequest 图片审核请求
@@ -304,7 +321,7 @@ public class PictureController {
      * @return 扩图任务响应
      */
     @PostMapping("/out_painting/create_task")
-    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    @SaSpaceCheckPermission(value = SpaceUserPermissionConstant.PICTURE_EDIT)
     public BaseResponse<CreateImageOutPaintingTaskResponse> createPictureOutPaintingTask(
         @RequestBody CreatePictureOutPaintingRequest createPictureOutPaintingTaskRequest, HttpServletRequest request) {
         if (createPictureOutPaintingTaskRequest == null || createPictureOutPaintingTaskRequest.getPictureId() == null) {
@@ -326,6 +343,21 @@ public class PictureController {
         ThrowUtils.throwIf(StrUtil.isBlank(taskId), RespCode.PARAMS_ERROR);
         GetImageOutPaintingTaskResponse task = imageOutPaintingTaskApi.getImageOutPaintingTask(taskId);
         return ResultUtils.success(task);
+    }
+
+    /**
+     * 获取图片标签分类列表
+     *
+     * @return
+     */
+    @GetMapping("/tag_category")
+    public BaseResponse<PictureTagCategory> listPictureTagCategory() {
+        PictureTagCategory pictureTagCategory = new PictureTagCategory();
+        List<String> tagList = Arrays.asList("热门", "搞笑", "生活", "高清", "艺术", "校园", "背景", "简历", "创意");
+        List<String> categoryList = Arrays.asList("模板", "电商", "表情包", "素材", "海报");
+        pictureTagCategory.setTagList(tagList);
+        pictureTagCategory.setCategoryList(categoryList);
+        return ResultUtils.success(pictureTagCategory);
     }
 }
 

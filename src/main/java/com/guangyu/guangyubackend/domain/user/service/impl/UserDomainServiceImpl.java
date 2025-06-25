@@ -80,8 +80,8 @@ public class UserDomainServiceImpl implements UserDomainService {
             log.info("user login fail, userAccount cannot match userPassword");
             throw new BusinessException(RespCode.PARAMS_ERROR, "用户不存在或密码错误");
         }
-        // 记录用户登陆状态
-        httpServletRequest.getSession().setAttribute(USER_LOGIN_STATUS, user);
+        // 记录用户登陆状态到SaToken,用户登录校验
+//                httpServletRequest.getSession().setAttribute(USER_LOGIN_STATUS, user);
         // 记录用户登陆状态到Sa-token，以便于空间鉴权
         // 需要保证用户信息与Session中的过期信息一致
         StpKit.SPACE.login(user.getId());
@@ -93,16 +93,24 @@ public class UserDomainServiceImpl implements UserDomainService {
 
     @Override
     public User getLoginUser(HttpServletRequest httpServletRequest) {
-        // 判断当前用户是否登录
-        Object userObj = httpServletRequest.getSession().getAttribute(USER_LOGIN_STATUS);
-        User user = (User)userObj;
-        ThrowUtils.throwIf(user == null || user.getId() == null || user.getId() <= 0, RespCode.NOT_LOGIN_ERROR);
+        // 2025/06/25 获取登录用户修改为Satoken update Start
+//                // 判断当前用户是否登录
+//                Object userObj = httpServletRequest.getSession().getAttribute(USER_LOGIN_STATUS);
+//                User user = (User)userObj;
+//                ThrowUtils.throwIf(user == null || user.getId() == null || user.getId() <= 0, RespCode.NOT_LOGIN_ERROR);
+//
+//                long userId = user.getId();
+//                user = userRepository.getById(userId);
+//                ThrowUtils.throwIf(user == null, RespCode.NOT_LOGIN_ERROR, "用户不存在");
 
-        long userId = user.getId();
-        user = userRepository.getById(userId);
-        ThrowUtils.throwIf(user == null, RespCode.NOT_LOGIN_ERROR, "用户不存在");
+        Long loginUserId = StpKit.SPACE.getLoginIdAsLong();
+        ThrowUtils.throwIf(loginUserId == null || loginUserId <= 0, RespCode.NOT_LOGIN_ERROR);
 
-        return user;
+        User currentUser = this.getById(loginUserId);
+        ThrowUtils.throwIf(currentUser == null, RespCode.NOT_LOGIN_ERROR, "用户不存在");
+        // 2025/06/25 update End
+
+        return currentUser;
     }
 
     @Override
@@ -118,12 +126,16 @@ public class UserDomainServiceImpl implements UserDomainService {
 
     @Override
     public boolean userLogout(HttpServletRequest httpServletRequest) {
+        //        2025/06/25 用户退出登录修改为SaToken update Start
         // 判断用户登录状态
-        Object userObj = httpServletRequest.getSession().getAttribute(USER_LOGIN_STATUS);
-        User user = (User)userObj;
-        ThrowUtils.throwIf(user == null || user.getId() == null, RespCode.NOT_LOGIN_ERROR, "用户未登录");
-        // 退出登录
-        httpServletRequest.getSession().removeAttribute(USER_LOGIN_STATUS);
+//        Object userObj = httpServletRequest.getSession().getAttribute(USER_LOGIN_STATUS);
+//        User user = (User)userObj;
+//        ThrowUtils.throwIf(user == null || user.getId() == null, RespCode.NOT_LOGIN_ERROR, "用户未登录");
+//        // 退出登录
+//        httpServletRequest.getSession().removeAttribute(USER_LOGIN_STATUS);
+        StpKit.SPACE.checkLogin();
+        StpKit.SPACE.logout();
+        //        2025/06/25  update End
         return true;
     }
 

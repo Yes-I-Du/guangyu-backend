@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
  * @version 2025/5/19 21:23
  * @since JDK17
  */
+//@Deprecated
 @Aspect
 @Component
 public class AuthInterceptor {

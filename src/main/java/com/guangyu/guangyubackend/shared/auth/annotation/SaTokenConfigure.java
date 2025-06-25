@@ -2,6 +2,7 @@ package com.guangyu.guangyubackend.shared.auth.annotation;
 
 import cn.dev33.satoken.interceptor.SaInterceptor;
 import cn.dev33.satoken.strategy.SaAnnotationStrategy;
+import com.guangyu.guangyubackend.shared.auth.StpKit;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;

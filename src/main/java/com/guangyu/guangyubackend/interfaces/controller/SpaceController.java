@@ -26,12 +26,15 @@ import com.guangyu.guangyubackend.interfaces.dto.space.SpaceEditRequest;
 import com.guangyu.guangyubackend.interfaces.dto.space.SpaceQueryRequest;
 import com.guangyu.guangyubackend.interfaces.dto.space.SpaceUpdateRequest;
 import com.guangyu.guangyubackend.interfaces.vo.space.SpaceVO;
+import com.guangyu.guangyubackend.shared.auth.SpaceUserAuthManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * @author dmz xxx@163.com
@@ -50,6 +53,9 @@ public class SpaceController {
 
     @Autowired
     private SpaceApplicationService spaceApplicationService;
+
+    @Resource
+    private SpaceUserAuthManager spaceUserAuthManager;
 
     // region 增删查改
     /*
@@ -139,8 +145,16 @@ public class SpaceController {
     public BaseResponse<SpaceVO> getSpaceVOById(@PathVariable("id") Long id, HttpServletRequest httpServletRequest) {
         // 参数校验
         ThrowUtils.throwIf(id == null || id <= 0, RespCode.PARAMS_ERROR, "请求参数错误");
+        Space space = spaceApplicationService.getSpaceById(id);
 
-        return ResultUtils.success(spaceApplicationService.getSpaceVOById(id));
+        // 获取空间信息
+        SpaceVO spaceVO = spaceApplicationService.getSpaceVO(space);
+        User loginUser = userApplicationService.getLoginUser(httpServletRequest);
+        // 获取权限列表
+        List<String> permissionList = spaceUserAuthManager.getPermissionList(space, loginUser);
+        spaceVO.setPermissionList(permissionList);
+
+        return ResultUtils.success(spaceVO);
     }
 
     /*
