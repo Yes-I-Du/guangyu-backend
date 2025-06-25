@@ -1,5 +1,6 @@
 package com.guangyu.guangyubackend.infrastructure.exception;
 
+import com.guangyu.guangyubackend.infrastructure.common.RespCode;
 import lombok.Getter;
 
 /**

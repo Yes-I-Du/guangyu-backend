@@ -1,6 +1,5 @@
 package com.guangyu.guangyubackend.infrastructure.common;
 
-import com.guangyu.guangyubackend.infrastructure.exception.RespCode;
 import lombok.Data;
 
 import java.io.Serializable;

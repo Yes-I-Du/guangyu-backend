@@ -14,6 +14,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -82,6 +83,9 @@ public class PictureVO implements Serializable {
 
     /* 用户信息 */
     private UserVO user;
+
+    /* 权限列表 */
+    private List<String> permissionList = new ArrayList<>();
 
     /**
      * 封装类 -> 图片对象

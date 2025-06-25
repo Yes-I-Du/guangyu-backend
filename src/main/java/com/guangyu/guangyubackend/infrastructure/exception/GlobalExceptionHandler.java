@@ -1,9 +1,10 @@
 package com.guangyu.guangyubackend.infrastructure.exception;
 
+import cn.dev33.satoken.exception.NotLoginException;
+import cn.dev33.satoken.exception.NotPermissionException;
 import com.guangyu.guangyubackend.infrastructure.common.BaseResponse;
 import com.guangyu.guangyubackend.infrastructure.common.ResultUtils;
-import com.guangyu.guangyubackend.infrastructure.exception.BusinessException;
-import com.guangyu.guangyubackend.infrastructure.exception.RespCode;
+import com.guangyu.guangyubackend.infrastructure.common.RespCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -29,5 +30,18 @@ public class GlobalExceptionHandler {
         log.error("RuntimeException", e);
         return ResultUtils.error(RespCode.SYSTEM_ERROR);
     }
+
+    @ExceptionHandler(NotLoginException.class)
+    public BaseResponse<?> notLoginException(NotLoginException e) {
+        log.error("NotLoginException", e);
+        return ResultUtils.error(RespCode.NOT_LOGIN_ERROR, e.getMessage());
+    }
+
+    @ExceptionHandler(NotPermissionException.class)
+    public BaseResponse<?> notPermissionExceptionHandler(NotPermissionException e) {
+        log.error("NotPermissionException", e);
+        return ResultUtils.error(RespCode.NO_AUTH_ERROR, e.getMessage());
+    }
+
 }
 

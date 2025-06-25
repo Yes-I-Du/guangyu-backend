@@ -6,12 +6,10 @@ import com.baomidou.mybatisplus.annotation.*;
 import java.io.Serializable;
 import java.util.Date;
 
-import com.guangyu.guangyubackend.domain.user.constant.UserConstant;
 import com.guangyu.guangyubackend.domain.user.valueobject.UserRoleEnum;
-import com.guangyu.guangyubackend.infrastructure.exception.RespCode;
+import com.guangyu.guangyubackend.infrastructure.common.RespCode;
 import com.guangyu.guangyubackend.infrastructure.exception.ThrowUtils;
 import lombok.Data;
-import org.springframework.util.DigestUtils;
 
 /**
  * 用户

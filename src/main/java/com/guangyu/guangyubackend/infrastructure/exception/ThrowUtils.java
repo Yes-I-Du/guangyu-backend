@@ -1,5 +1,7 @@
 package com.guangyu.guangyubackend.infrastructure.exception;
 
+import com.guangyu.guangyubackend.infrastructure.common.RespCode;
+
 /**
  * 自定义异常工具类
  *

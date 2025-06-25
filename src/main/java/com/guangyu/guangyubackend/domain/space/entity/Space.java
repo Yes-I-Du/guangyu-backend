@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import com.guangyu.guangyubackend.domain.space.constant.SpaceConstant;
-import com.guangyu.guangyubackend.infrastructure.exception.RespCode;
+import com.guangyu.guangyubackend.infrastructure.common.RespCode;
 import com.guangyu.guangyubackend.infrastructure.exception.ThrowUtils;
 import com.guangyu.guangyubackend.infrastructure.manager.space.SpaceLevelManager;
 import lombok.Data;
@@ -35,6 +35,11 @@ public class Space implements Serializable {
      * 空间级别：0-普通版 1-专业版 2-旗舰版
      */
     private Integer spaceLevel;
+
+    /**
+     * 空间类型：0-私有 1-团队
+     */
+    private Integer spaceType;
 
     /**
      * 空间图片的最大总大小

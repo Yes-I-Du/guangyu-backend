@@ -2,7 +2,7 @@ package com.guangyu.guangyubackend.interfaces.controller;
 
 import com.guangyu.guangyubackend.infrastructure.common.BaseResponse;
 import com.guangyu.guangyubackend.infrastructure.common.ResultUtils;
-import com.guangyu.guangyubackend.infrastructure.exception.RespCode;
+import com.guangyu.guangyubackend.infrastructure.common.RespCode;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

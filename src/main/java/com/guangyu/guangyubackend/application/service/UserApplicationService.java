@@ -20,7 +20,7 @@ import java.util.Set;
  * @description 针对表【user(用户)】的数据库操作Service
  * @createDate 2025-05-18 19:04:32
  */
-public interface UserApplicationService extends IService<User> {
+public interface UserApplicationService{
 
     /**
      * 用户注册

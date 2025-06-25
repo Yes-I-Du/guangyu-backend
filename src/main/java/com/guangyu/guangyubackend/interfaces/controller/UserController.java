@@ -1,5 +1,6 @@
 package com.guangyu.guangyubackend.interfaces.controller;
 
+import cn.dev33.satoken.annotation.SaCheckRole;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.guangyu.guangyubackend.application.service.UserApplicationService;
 import com.guangyu.guangyubackend.domain.user.constant.UserConstant;
@@ -8,7 +9,7 @@ import com.guangyu.guangyubackend.infrastructure.annotation.AuthCheck;
 import com.guangyu.guangyubackend.infrastructure.common.BaseResponse;
 import com.guangyu.guangyubackend.infrastructure.common.DeleteRequest;
 import com.guangyu.guangyubackend.infrastructure.common.ResultUtils;
-import com.guangyu.guangyubackend.infrastructure.exception.RespCode;
+import com.guangyu.guangyubackend.infrastructure.common.RespCode;
 import com.guangyu.guangyubackend.infrastructure.exception.ThrowUtils;
 import com.guangyu.guangyubackend.interfaces.assembler.UserAssembler;
 import com.guangyu.guangyubackend.interfaces.dto.user.*;
@@ -93,6 +94,7 @@ public class UserController {
      */
     @GetMapping("/add")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+//    @SaCheckRole(UserConstant.ADMIN_ROLE)
     public BaseResponse<Long> addUser(@RequestBody UserAddRequest userAddRequest) {
         ThrowUtils.throwIf(userAddRequest == null, RespCode.PARAMS_ERROR, "请求参数错误");
         return ResultUtils.success(userApplicationService.addUser(UserAssembler.toUserEntity(userAddRequest)));

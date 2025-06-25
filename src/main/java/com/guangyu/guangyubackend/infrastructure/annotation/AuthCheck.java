@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
  *
  * @author Dmz Email:  * @since 2025/05/19 21:20
  */
-
+//@Deprecated
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface AuthCheck {

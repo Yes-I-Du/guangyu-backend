@@ -15,8 +15,11 @@ import com.guangyu.guangyubackend.domain.space.entity.Space;
 import com.guangyu.guangyubackend.domain.space.repository.SpaceRepository;
 import com.guangyu.guangyubackend.domain.user.entity.User;
 import com.guangyu.guangyubackend.infrastructure.api.CosManager;
+import com.guangyu.guangyubackend.infrastructure.api.aliyunai.ImageOutPaintingTaskApi;
+import com.guangyu.guangyubackend.infrastructure.api.aliyunai.model.CreateImageOutPaintingTaskResponse;
+import com.guangyu.guangyubackend.infrastructure.api.aliyunai.model.ImageOutPaintingRequest;
 import com.guangyu.guangyubackend.infrastructure.exception.BusinessException;
-import com.guangyu.guangyubackend.infrastructure.exception.RespCode;
+import com.guangyu.guangyubackend.infrastructure.common.RespCode;
 import com.guangyu.guangyubackend.infrastructure.exception.ThrowUtils;
 import com.guangyu.guangyubackend.infrastructure.manager.upload.model.dto.file.UploadPictureResult;
 import com.guangyu.guangyubackend.interfaces.dto.picture.*;
@@ -38,6 +41,7 @@ import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Dmz
@@ -69,6 +73,9 @@ public class PictureDomainServiceImpl implements PictureDomainService {
     @Autowired
     private CosManager cosManager;
 
+    @Resource
+    private ImageOutPaintingTaskApi imageOutPaintingTaskApi;
+
     @Override
     public PictureVO uploadPicture(Object inputFileSource, PictureUploadRequest pictureUploadRequest, User loginUser) {
         // 空间存在Check
@@ -77,11 +84,12 @@ public class PictureDomainServiceImpl implements PictureDomainService {
             // 获取空间信息
             Space existSpace = spaceApplicationService.getSpaceById(spaceId);
             ThrowUtils.throwIf(existSpace == null, RespCode.NOT_FOUND_ERROR, "空间不存在");
-            // 空间权限校验(只有用户空间的管理者，即空间的拥有者(创建者)有图片上传权限)
-            if (!existSpace.getUserId().equals(loginUser.getId())) {
-                ThrowUtils.throwIf(true, RespCode.NO_AUTH_ERROR, "该登录用户暂时无该私有空间操作权限");
-            }
-
+            //            2025/06/25 空间权限校验使用SaToken方式 delete start
+            //            // 空间权限校验(只有用户空间的管理者，即空间的拥有者(创建者)有图片上传权限)
+            //            if (!existSpace.getUserId().equals(loginUser.getId())) {
+            //                ThrowUtils.throwIf(true, RespCode.NO_AUTH_ERROR, "该登录用户暂时无该私有空间操作权限");
+            //            }
+            //            2025/06/25  delete end
             // 空间图片数量额度校验
             ThrowUtils.throwIf(existSpace.getTotalCount() >= existSpace.getMaxCount(), RespCode.PARAMS_ERROR,
                 "空间图片数量已达到上限");
@@ -97,10 +105,12 @@ public class PictureDomainServiceImpl implements PictureDomainService {
         if (pictureId != null) {
             pictureExist = pictureRepository.getById(pictureId);
             ThrowUtils.throwIf(pictureExist == null, RespCode.NOT_FOUND_ERROR, "图片不存在");
+            //            2025/06/25 图片权限校验使用SaToken方式 delete start
             // 图片权限校验(只有该图片的拥护者(创建者)以及Admin有图片更新权限或编辑权限)
-            if (!pictureExist.getUserId().equals(loginUser.getId()) && !loginUser.isAdmin()) {
-                ThrowUtils.throwIf(true, RespCode.NO_AUTH_ERROR, "该登录用户暂时无该图片操作权限");
-            }
+            //            if (!pictureExist.getUserId().equals(loginUser.getId()) && !loginUser.isAdmin()) {
+            //                ThrowUtils.throwIf(true, RespCode.NO_AUTH_ERROR, "该登录用户暂时无该图片操作权限");
+            //            }
+            //            2025/06/25  delete end
             // 图片空间一致性校验
             if (spaceId == null) {
                 // 如果spaceId为空(更新请求中不含SpaceId)，则从图片信息中获取spaceId
@@ -404,12 +414,15 @@ public class PictureDomainServiceImpl implements PictureDomainService {
             // 删除图片信息
             boolean saveResult = pictureRepository.removeById(pictureId);
             ThrowUtils.throwIf(!saveResult, RespCode.OPERATION_ERROR, "图片删除失败");
+            Long spaceId = existPicture.getSpaceId();
             // 删除图片信息后，用户空间剩余容量信息更新
-            // 更新空间的使用额度
-            boolean update = spaceRepository.lambdaUpdate().eq(Space::getId, existPicture.getSpaceId())
-                .setSql("totalSize = totalSize - " + existPicture.getPicSize()).setSql("totalCount = totalCount - 1")
-                .update();
-            ThrowUtils.throwIf(!update, RespCode.OPERATION_ERROR, "用户空间剩余容量更新失败");
+            if (spaceId != null) {
+                // 更新空间的使用额度
+                boolean update = spaceRepository.lambdaUpdate().eq(Space::getId, spaceId)
+                    .setSql("totalSize = totalSize - " + existPicture.getPicSize())
+                    .setSql("totalCount = totalCount - 1").update();
+                ThrowUtils.throwIf(!update, RespCode.OPERATION_ERROR, "用户空间剩余容量更新失败");
+            }
             return true;
         });
         // 异步清理图片
@@ -464,6 +477,25 @@ public class PictureDomainServiceImpl implements PictureDomainService {
     @Override
     public void editPictureByBatch(PictureEditByBatchRequest pictureEditByBatchRequest, User loginUser) {
 
+    }
+
+    @Override
+    public CreateImageOutPaintingTaskResponse createPictureOutPaintingTask(
+        CreatePictureOutPaintingRequest createPictureOutPaintingRequest, User loginUser) {
+        // 获取图片信息
+        Long pictureId = createPictureOutPaintingRequest.getPictureId();
+        Picture picture = Optional.ofNullable(pictureRepository.getById(pictureId))
+            .orElseThrow(() -> new BusinessException(RespCode.NOT_FOUND_ERROR, "图片不存在"));
+        // 权限校验
+        this.checkPictureAuth(loginUser, picture);
+        // 创建扩图任务
+        ImageOutPaintingRequest imageOutPaintingRequest = new ImageOutPaintingRequest();
+        ImageOutPaintingRequest.Input imageOutPaintingRequestInput = new ImageOutPaintingRequest.Input();
+        imageOutPaintingRequestInput.setImageUrl(picture.getUrl());
+        imageOutPaintingRequest.setInput(imageOutPaintingRequestInput);
+        imageOutPaintingRequest.setParameters(createPictureOutPaintingRequest.getParameters());
+
+        return imageOutPaintingTaskApi.createImageOutPaintingTask(imageOutPaintingRequest);
     }
 
 }

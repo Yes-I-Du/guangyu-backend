@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.guangyu.guangyubackend.domain.picture.entity.Picture;
 import com.guangyu.guangyubackend.domain.user.entity.User;
+import com.guangyu.guangyubackend.infrastructure.api.aliyunai.model.CreateImageOutPaintingTaskResponse;
 import com.guangyu.guangyubackend.interfaces.dto.picture.*;
 import com.guangyu.guangyubackend.interfaces.vo.picture.PictureVO;
 import org.springframework.scheduling.annotation.Async;
@@ -135,4 +136,13 @@ public interface PictureDomainService {
      * @param loginUser                 当前登录用户
      */
     void editPictureByBatch(PictureEditByBatchRequest pictureEditByBatchRequest, User loginUser);
+
+    /**
+     * 创建扩图任务
+     *
+     * @param createPictureOutPaintingRequest 扩图任务请求
+     * @param loginUser                       当前登录用户
+     */
+    CreateImageOutPaintingTaskResponse createPictureOutPaintingTask(
+        CreatePictureOutPaintingRequest createPictureOutPaintingRequest, User loginUser);
 }
