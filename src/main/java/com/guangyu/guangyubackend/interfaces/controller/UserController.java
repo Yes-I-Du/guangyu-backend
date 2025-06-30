@@ -1,11 +1,9 @@
 package com.guangyu.guangyubackend.interfaces.controller;
 
-import cn.dev33.satoken.annotation.SaCheckRole;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.guangyu.guangyubackend.application.service.UserApplicationService;
 import com.guangyu.guangyubackend.domain.user.constant.UserConstant;
 import com.guangyu.guangyubackend.domain.user.entity.User;
-import com.guangyu.guangyubackend.infrastructure.annotation.AuthCheck;
 import com.guangyu.guangyubackend.infrastructure.common.BaseResponse;
 import com.guangyu.guangyubackend.infrastructure.common.DeleteRequest;
 import com.guangyu.guangyubackend.infrastructure.common.ResultUtils;
@@ -15,6 +13,8 @@ import com.guangyu.guangyubackend.interfaces.assembler.UserAssembler;
 import com.guangyu.guangyubackend.interfaces.dto.user.*;
 import com.guangyu.guangyubackend.interfaces.vo.user.LoginUserVO;
 import com.guangyu.guangyubackend.interfaces.vo.user.UserVO;
+import com.guangyu.guangyubackend.shared.auth.annotation.SaSpaceCheckLogin;
+import com.guangyu.guangyubackend.shared.auth.annotation.SaSpaceCheckRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -66,6 +66,7 @@ public class UserController {
      * @return 退出登录结果
      */
     @PostMapping("/logout")
+    @SaSpaceCheckLogin
     public BaseResponse<Boolean> userLogout(HttpServletRequest httpServletRequest) {
         return ResultUtils.success(userApplicationService.userLogout(httpServletRequest));
     }
@@ -92,9 +93,8 @@ public class UserController {
      * @param userAddRequest 用户信息
      * @return 用户 id
      */
-    @GetMapping("/add")
-    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
-//    @SaCheckRole(UserConstant.ADMIN_ROLE)
+    @PostMapping("/add")
+    @SaSpaceCheckRole(UserConstant.ADMIN_ROLE)
     public BaseResponse<Long> addUser(@RequestBody UserAddRequest userAddRequest) {
         ThrowUtils.throwIf(userAddRequest == null, RespCode.PARAMS_ERROR, "请求参数错误");
         return ResultUtils.success(userApplicationService.addUser(UserAssembler.toUserEntity(userAddRequest)));
@@ -107,7 +107,7 @@ public class UserController {
      * @return 用户信息
      */
     @GetMapping("/get/{id}")
-    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    @SaSpaceCheckRole(UserConstant.ADMIN_ROLE)
     public BaseResponse<User> getUserById(@PathVariable("id") Long id) {
         return ResultUtils.success(userApplicationService.getUserById(id));
     }
@@ -129,7 +129,7 @@ public class UserController {
      * @return 用户信息
      */
     @PostMapping("/delete")
-    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    @SaSpaceCheckRole(UserConstant.ADMIN_ROLE)
     public BaseResponse<Boolean> deleteUser(@RequestBody DeleteRequest deleteRequest) {
         return ResultUtils.success(userApplicationService.deleteUser(deleteRequest));
     }
@@ -141,7 +141,7 @@ public class UserController {
      * @return true
      */
     @PutMapping("/update")
-    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    @SaSpaceCheckRole(UserConstant.ADMIN_ROLE)
     public BaseResponse<Boolean> updateUser(@RequestBody UserUpdateRequest userUpdateRequest) {
         ThrowUtils.throwIf(userUpdateRequest == null, RespCode.PARAMS_ERROR, "请求参数错误");
         userApplicationService.updateUser(UserAssembler.toUserEntity(userUpdateRequest));
@@ -155,7 +155,7 @@ public class UserController {
      * @return 用户信息
      */
     @PostMapping("/list/page/vo")
-    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    @SaSpaceCheckRole(UserConstant.ADMIN_ROLE)
     public BaseResponse<Page<UserVO>> listUserVOByPage(@RequestBody UserQueryRequest userQueryRequest) {
         ThrowUtils.throwIf(userQueryRequest == null, RespCode.PARAMS_ERROR);
         Page<UserVO> userVOPage = userApplicationService.listUserVOByPage(userQueryRequest);

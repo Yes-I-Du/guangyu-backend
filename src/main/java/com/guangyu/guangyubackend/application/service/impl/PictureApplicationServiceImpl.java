@@ -81,7 +81,6 @@ public class PictureApplicationServiceImpl implements PictureApplicationService 
     @Override
     public PictureVO getPictureVOById(Picture picture, HttpServletRequest request) {
         return this.getPictureVO(picture, request);
-
     }
 
     @Override

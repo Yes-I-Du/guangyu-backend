@@ -45,3 +45,7 @@ logs/
 # application.yml
 application-local.yml
 
+*.yml~
+*.java~
+*.pom~
+
